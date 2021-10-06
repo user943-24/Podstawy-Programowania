@@ -6,8 +6,10 @@
 #include <iostream>
 
 
-auto main() -> int
-{
-    std::cout << "Hello, World!\n";
+auto main() -> int {
+    std::cout << "Hello, Maciej!\n";
+    std::cout << "Hello, Jack!\n";
+    std::cout << "Hello, Michael!\n";
+
     return 0;
 }

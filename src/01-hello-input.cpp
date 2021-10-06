@@ -7,8 +7,7 @@
 #include <string>
 
 
-auto main() -> int
-{
+auto main() -> int {
     std::cout << "What's your name? ";
 
     auto name = std::string{};

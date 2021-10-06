@@ -3,8 +3,8 @@ CXXSTD=c++17
 CXXWARNINGS=\
 		   -Wall \
 		   -Wextra \
-		   -Wpedantic \
 		   -Werror \
+		   -Wpedantic \
 		   -Wfatal-errors
 CXXINCLUDES=\
 			-I./include
