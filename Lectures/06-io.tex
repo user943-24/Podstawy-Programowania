@@ -1,0 +1,573 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{epigraph}
+
+\renewcommand{\epigraphsize}{\scriptsize}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{000000}
+\setbeamercolor{lower separation line head}{bg=xbarcolor}
+\setbeamercolor{lower separation line foot}{bg=xbarcolor}
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{I/O (operacje wejścia-wyjścia)}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={[*}{*]},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{red}]{@}{@},
+moredelim=**[is][\color{gray}]{`}{`},
+moredelim=**[is][\color{olive}]{$}{$}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{Wstęp}
+
+\begin{frame}
+    \frametitle{I/O}
+
+    I/O czyli ,,operacje wejścia wyjścia'' (ang. \emph{input-output}) pozwala
+    programom na interakcję ze światem zewnętrznym.
+
+    Bez I/O nie byłoby możliwe napisanie nawet tak prostego programu jak
+    klasyczne ,,Hello,~World!''.
+\end{frame}
+
+\begin{frame}
+    \frametitle{C++: I/O streams}
+
+    Biblioteka standardowa języka C++ dostarcza tzw. ,,I/O streams'': struktury
+    danych, które opakowują mechanizmy I/O dostarczane przez system operacyjny.
+    Są one proste w użyciu (np. \texttt{std::cout}, \texttt{std::cin}) i oferują
+    spójny interfejs ,,strumienia'' również dla typów, które udają I/O, np.
+    \texttt{std::ostringstream} i \texttt{std::istringstream}.
+
+    \vspace{1em}
+
+    I/O streams jednak sprawdzają się średnio w sytuacjach kiedy potrzeba jest
+    zrelizować coś co wykracza poza ich ,,happy path'', oraz nie oferują nic w
+    zakresie I/O z wykorzystaniem sieci.
+
+    Z tego powodu pominiemy je i zajmiemy się mechanizmami I/O oferowanymi przez
+    system operaycjny Linux.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Linux: file descriptors}
+
+    Linux jest systemem Unixopodobnym (ang. \emph{*nix-like}) i zapewnia
+    mechanizmy I/O opisane przez standard POSIX.
+
+    \vspace{1em}
+
+    Oprócz mechanizmów I/O narzuconych przez standard POSIX, Linux oferuje swoje
+    własne API (np. \texttt{io\_uring}), jednak w tym wykładzie nie będzie ono
+    omawiane.
+\end{frame}
+
+\begin{frame}
+    \frametitle{POSIX I/O: Everything is a file}
+
+    Systemy POSIX działają zgodnie z zasadą ,,everything is a file'' czyli
+    ,,wszystko jest plikiem''. Dzięki temu możemy używając jednego, spójnego
+    interfejsu manipulować sporą ilością rzeczy w systemie.
+
+    \vspace{1em}
+
+    Pod kątem tego wykładu ważniejsze jednak będzie to, że ta zasada oznacza, że
+    bardzo podobny kod pozwoli nam obsłużyć I/O na plikach jak i na innych
+    metodach przenoszenia danych.
+\end{frame}
+
+\section{File I/O}
+
+\begin{frame}
+    \frametitle{API}
+
+    \begin{enumerate}
+        \item \texttt{open(2)}
+        \item \texttt{read(2)}
+        \item \texttt{write(2)}
+        \item \texttt{lseek(2)}
+        \item \texttt{stat(2)}, \texttt{lstat(2)}
+        \item \texttt{close(2)}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Otwieranie i zamykanie pliku}
+    \framesubtitle{\texttt{open(2)}, \texttt{close(2)}}
+
+    Stworzenie pliku i z prawami do zapisu i odczytu przez użytkownika, a
+    następnie (po użyciu) zamknięcie file descriptora, który na niego wskazuje:
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto name = std::string{"./example.txt"};
+    auto fd = @open@(name.c_str(), O_CREAT|O_RDWR, S_IRUSR|S_IWUSR);
+
+    $// do something with fd$
+
+    @close@(fd);
+    \end{lstlisting}}
+
+    Funkcja \texttt{open(2)} może zwrócić wartość -1 w przypadku
+    błędu\footnote{Zdecydowana większość funkcji z API POSIX zwraca -1 w
+    przypadku błędu, i ustawia globalną zmienną \texttt{errno} na wartość
+    informującą o tym co dokładnie poszło nie tak.}!
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zapis do deskryptora}
+    \framesubtitle{\texttt{write(2)}}
+
+    Zapis danych polega na podaniu funkcji \texttt{write(2)} wskaźnika do
+    pewnego obszaru pamięci, oraz podaniu ilości bajtów, która ma być z tego
+    obszaru zapisana do file descriptora:
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto buf = std::string{"Hello, World!\n"};
+    auto n = @write@(fd, buf.data(), buf.size());
+    if (n == -1) {
+        perror("write(2)");
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Odczyt z deskryptora}
+    \framesubtitle{\texttt{read(2)}}
+
+    Odczyt danych polega na podaniu funkcji \texttt{read(2)} wskaźnika do
+    pewnego obszaru pamięci, oraz podaniu ilości bajtów, która powinna być do
+    niego wczytana\footnote{należy pamiętać, żeby nie podać wartości większej
+    niż rozmiar bufora}:
+
+    {\footnotesize
+    \begin{lstlisting}
+    std::array<char, 4096> buf { 0 };
+    auto const n = @read@(fd, buf.data(), buf.size());
+    if (n == -1) {
+        perror("read(2)");
+    } else {
+        std::cout << std::string{buf.data(), static_cast<size_t>(n)};
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Częściowy sukces}
+    \framesubtitle{\texttt{write(2)}, \texttt{read(2)}}
+
+    Dla funkcji \texttt{write(2)} i \texttt{read(2)} w przypadku sukcesu
+    wynikiem jest ilość zapisanych lub odczytanych bajtów. Nie ma
+    \emph{absolutnie żadnej gwarancji}, że ta ilość będzie dokładnie równa
+    ilości przekazanej jako argument\footnote{ta sama uwaga dotyczy I/O
+    wykonywanego po sieci}.
+
+    \vspace{1em}
+
+    To ile bajtów jest możliwe do zapisu lub odczytu nie zależy tylko od
+    naszego programu. Mają na to wpływ inne uruchomione procesy, rozmiary
+    buforów systemu operacyjnego, scheduler I/O, prędkość dysku i łącza, itd.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Informacje o pliku}
+    \framesubtitle{\texttt{fstat(2)}}
+
+    Używając funkcji \texttt{fstat(2)} można odczytać np. rozmiar pliku, żeby
+    móc określić ile bajtów potrzeba żeby wczytać jego całość:
+
+    {\footnotesize
+    \begin{lstlisting}
+    struct stat info;
+    memset(&info, 0, sizeof(info));
+    auto const r = fstat(fd, &info);
+    if (r == -1) {
+        perror("stat(2)");
+    } else {
+        std::cout << info.st_size << " byte(s)\n";
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: zapis studenta}
+    \label{lecture_exercise_0}
+
+    Korzystając ze struktury danych \texttt{Student} z poprzednich zajęć napisz
+    program, który zapisze ją do pliku \texttt{student.txt}. Niech każde pole
+    będzie zapisane w osobnej linijce (tj. zakończone znakiem nowej linii).
+
+    Kod źródłowy: \texttt{s06-store-student.cpp}
+
+    \vspace{1em}
+
+    Przykładowy plik:
+    {\small
+    \begin{lstlisting}
+    Student Studencki
+    s12345
+    1
+    4.25
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: odczyt studenta}
+    \label{lecture_exercise_1}
+
+    Korzystając ze struktury danych \texttt{Student} z poprzednich zajęć napisz
+    program, który wczyta ją z pliku \texttt{student.txt} (niech wczyta to co
+    zapisał program z poprzedniego zadania).
+
+    Kod źródłowy: \texttt{s06-load-student.cpp}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: drukowanie pliku}
+    \label{lecture_exercise_2}
+
+    Napisz program, który pobierze jako argument (\texttt{argv}) nazwę pliku,
+    oraz wydrukuje zawartość tego pliku na standardowe wyjście. Obsłuż sytuację,
+    w której plik nie istnieje.
+
+    Kod źródłowy: \texttt{s06-cat.cpp}
+\end{frame}
+
+\section{Network I/O}
+
+\begin{frame}
+    \frametitle{API}
+
+    \begin{enumerate}
+        \item \texttt{socket(2)}
+        \item \texttt{bind(2)}
+        \item \texttt{listen(2)}
+        \item \texttt{connect(2)}
+        \item \texttt{read(2)}
+        \item \texttt{write(2)}
+        \item \texttt{shutdown(2)}
+        \item \texttt{close(2)}
+        \item \texttt{signal(2)} (blokada \texttt{SIGPIPE})
+        \item \texttt{ip(7)}, \texttt{ipv6(7)}
+        \item \texttt{tcp(7)}, \texttt{udp(7)}
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Utworzenie socketu TCP/IP}
+    \framesubtitle{\texttt{socket(2)}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto sock = socket(AF_INET, SOCK_STREAM, 0);
+    \end{lstlisting}}
+
+    Stworzy to ,,goły'' socket TCP/IP, który można potem wykorzystać do
+    nasłuchiwania na połączenia (server), albo do nawiązania połączenia ze
+    zdalną maszyną (client).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zamknięcie połączenia}
+    \framesubtitle{\texttt{shutdown(2)}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    shutdown(sock, SHUT_RDWR);
+    \end{lstlisting}}
+
+    Zamknie to kanały komunikacyjne i w poprawny sposób zakończy połączenie.
+    Zasoby (file descriptor i socket) nie będą zwolnione do systemu
+    operacyjnego.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zamknięcie socketu}
+    \framesubtitle{\texttt{close(2)}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    close(sock);
+    \end{lstlisting}}
+
+    Zamknięcie socketu i file descriptora, oraz oddanie zasobów do systemu
+    operaycjnego.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Określenie adresu}
+    \framesubtitle{\texttt{inet\_pton(2)}, \texttt{sockaddr\_in}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto const ip = std::string{"192.168.0.24"};
+    auto const port = uint16_t{8080};
+
+    sockaddr_in addr;
+    memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htobe16(port);
+    @inet_pton@(addr.sin_family, ip.c_str(), &addr.sin_addr);
+    \end{lstlisting}}
+
+    W przypadku serwera - na jakim adresie będzie nasłuchiwać na połączenia.
+    W przypadku klienta - na jaki adres spróbuje nawiązać połączenie.
+\end{frame}
+
+\subsection{Server}
+
+\begin{frame}[fragile]
+    \frametitle{Przywiązanie do adresu}
+    \framesubtitle{\texttt{bind(2)}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    sockaddr_in addr;
+    $// prepare the address$
+
+    @bind@(sock, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Nasłuchiwanie na połączenia}
+    \framesubtitle{\texttt{listen(2)}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    @listen@(sock, SOMAXCONN); $// or 0 for implementation-default value$
+    \end{lstlisting}}
+
+    Argument podany jako \texttt{SOMAXCONN} określa maksymalną liczbę połączeń
+    oczekujących na odebranie.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Odebranie połączenia}
+    \framesubtitle{\texttt{accept(2)}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto client_sock = @accept@(sock, nullptr, nullptr);
+    \end{lstlisting}}
+
+    Zmienna \texttt{client\_sock} zawiera file descriptor wskazujący na socket,
+    który umożliwia komunikację z klientem.
+
+    Dodatkowe dwa parametry wskazują na strukturę danych (i jej rozmiar), do
+    której system operacyjny powinien zapisać adres klienta. Jeśli ta informacja
+    nie jest potrzebna, można przekazać \texttt{nullptr}.
+\end{frame}
+
+\subsection{Client}
+
+\begin{frame}[fragile]
+    \frametitle{Nawiązanie połączenia}
+    \framesubtitle{\texttt{connect(2)}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto server_sock = @connect@(
+        sock
+        , reinterpret_cast<sockaddr*>(&addr)
+        , sizeof(addr)
+    );
+    \end{lstlisting}}
+
+    Zmienna \texttt{server\_sock} zawiera file descriptor wskazujący na socket,
+    który umożliwia komunikację z serwerem.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Komunikacja}
+    \framesubtitle{TCP/IP}
+
+    Socket, który w ten sposób został stworzony reprezentuje \emph{połączenie}
+    między serwerem, a klientem, które jest \emph{strumieniowe}.
+
+    Oznacza to, że dane zapisane jednym wywołaniem \texttt{write(2)} na
+    serwerze, nie muszą wcale być możliwe do odczytania jednym wywołaniem
+    \texttt{read(2)} na kliencie, i \textit{vice versa} -- połączenie
+    strumieniowe nie ma pojęcia ,,wiadomości''. Musi to być zaimplementowane w
+    programie (np. definiując schemat danych, które są wysyłane -- protokół).
+\end{frame}
+
+\begin{frame}
+    \frametitle{Opóźnienia i błędy}
+    \framesubtitle{TCP/IP}
+
+    Należy pamiętać, że komunikacja po sieci może być \textbf{wolna} i
+    \textbf{zawodna}. Bardzo istotna jest poprawna obsługa możliwych błędów.
+
+    \vspace{1em}
+
+    Współcześnie używana pamięć masowa potrafi przekazywać dane z prędkościami
+    sięgającymi kilku GB/s (\emph{gigabajtów} na sekundę). Połączenia sieciowe
+    rzadko osiągają prędkość 1 Gb/s (\emph{gigabitu} na sekundę).
+
+    \vspace{1em}
+
+    Co więcej, sieć to nie połączenie SATA lub PCIe, tylko kable, kabelki i fale
+    radiowe. Ta infrastruktura może zawieść - fale mogą być zagłuszone, a kable
+    przerwane, co może wymagać użycia wolniejszej ścieżki lub doprowadzić do
+    zerwania połączenia.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: serwer echo}
+    \label{lecture_exercise_3}
+
+    Napisz serwer, który będzie oczekiwać na połączenia od klientów, odczytywać
+    od nich jakieś dane (zakończone znakiem nowej linii), oraz odsyłać im te
+    dane z powrotem. Pamiętaj o obsłużeniu sytuacji, w której klient się
+    rozłącza!
+
+    Kod źródłowy: \texttt{s06-echo-server.cpp}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: serwer plików (odczyt)}
+    \label{lecture_exercise_4}
+
+    Napisz serwer, który będzie oczekiwać na połączenia od klientów, odczytywać
+    od nich dane (zakończone znakiem nowej linii) reprezentujące ścieżki do
+    plików.
+
+    Po odebraniu ścieżki serwer powinien odczytać plik, i wysłać do klienta
+    ścieżkę, znak nowej linii, oraz zawartośc pliku. Jeśli plik nie istnieje
+    serwer powinien odesłać smutną buźkę: \texttt{:-(}
+
+    Kod źródłowy: \texttt{s06-file-server.cpp}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: wymiana wiadomości}
+    \label{lecture_exercise_5}
+
+    Napisz serwer, który będzie umożliwiał klientom wysłanie wiadomości do
+    serwera. Serwer powinien te wiadomości zapisywać w pamięci, i odpowiadać
+    losową wiadomością (jedną z tych które otrzymał już od innych klientów).
+
+    Kod źródłowy: \texttt{s06-random-note-server.cpp}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: client}
+    \label{lecture_exercise_6}
+
+    Napisz program, który będzie umożliwiał połączenie się z wybranym serwerem,
+    wysyłanie do niego linijek tekstu, i odbieranie od niego danych. Użyj tego
+    klienta do komunikacji z serwerami z poprzednich zadań.
+
+    Kod źródłowy: \texttt{s06-client.cpp}
+\end{frame}
+
+\section{Async I/O}
+
+\begin{frame}
+    \frametitle{API}
+
+    \begin{enumerate}
+        \item \texttt{select(2)}
+        \item \texttt{poll(2)}
+        \item \texttt{epoll(7)} (Linux)
+        \item \texttt{aio(7)}
+    \end{enumerate}
+
+    Podane strony manuala zawierają przykładowy kod w języku C, który można
+    przepisać, skompilować, i sprawdzić jak działa.
+
+    \vspace{1em}
+    {\tiny
+    System Linux oferuje jeszcze interfejs \texttt{io\_uring}, który jest na
+    tyle nowy, że nie ma jeszcze strony w manualu -- informacji o nim trzeba
+    szukać w Internecie.}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zastosowanie}
+
+    I/O zajmuje czas i może zablokować nasz wątek. Jeśli istnieje potrzeba
+    uniknięcia takiej sytuacji, to można poradzić sobie z tym na kilka sposobów:
+
+    \begin{enumerate}
+        \item utworzyć wątek dedykowany operacjom I/O, który może być blokowany
+        \item użyć \emph{nonblocking I/O}, czyli wywołań z gwarancją nieblokowania
+            wątku (ten styl wiąże się z dodatkowymi wyzwaniami)
+        \item użyć \emph{asynchronous I/O}, czyli wywołań, które powodują
+            wykonanie operacji I/O ,,w tle'' przez system operacyjny
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Przykłady}
+
+    Wykonywanie kilku operacji I/O naraz, lub operacji I/O i czegoś jeszcze,
+    jest bardzo częstą sytuacją - np.:
+
+    \begin{enumerate}
+        \item serwer obsługuje kilka klientów naraz
+        \item program odczytuje kopiuje pliki i drukuje pasek postępu
+        \item gra wczytuje poziom i pokazuje użytkownikowi ,,tip of the day''
+        \item czat oczytuje wiadomości, ale jednocześnie drukuje powiadomienia
+            ,,ktoś pisze...''
+    \end{enumerate}
+\end{frame}
+
+\section{Podsumowanie}
+
+\begin{frame}
+    \frametitle{Co nowego?}
+    \frametitle{Podsumowanie}
+
+    Student powinien umieć:
+
+    \begin{enumerate}
+        \item prowadzić operacje I/O na plikach
+        \item prowadzić operacje I/O z wykorzystaniem połączenia sieciowego
+            używając protokołu TCP/IP
+        \item znać możliwości i przykłady zastosowania API dostarczanego przez
+            standard POSIX dla asychronicznych i nieblokujących operacji I/O
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadania}
+    \framesubtitle{Podsumowanie}
+
+    Zadania znajdują się na slajdach
+    \ref{lecture_exercise_0},
+    \ref{lecture_exercise_1},
+    \ref{lecture_exercise_2},
+    \ref{lecture_exercise_3},
+    \ref{lecture_exercise_4},
+    \ref{lecture_exercise_5},
+    \ref{lecture_exercise_6}.
+\end{frame}
+
+\end{document}

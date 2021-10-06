@@ -1,0 +1,15 @@
+# Student::to_string()
+
+Kod:
+
+    auto const student = s12345::Student{
+          "Student"     // imię
+        , "Studencki"   // nazwisko
+        , "12345"       // numer indeksu
+        , 1             // semestr
+        , 4.268         // średnia ocen
+    };
+
+Wynik:
+
+    Student Studencki (s12345), semestr 1: 4.268

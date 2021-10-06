@@ -1,0 +1,383 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{epigraph}
+
+\renewcommand{\epigraphsize}{\scriptsize}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{0f2f0f}
+\setbeamercolor{lower separation line head}{bg=xbarcolor} 
+\setbeamercolor{lower separation line foot}{bg=xbarcolor} 
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{Wstęp do programowania}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={\%*}{*)},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{red}]{@}{@}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{Rys historyczny}
+
+\begin{frame}
+    \frametitle{Środek historii}
+    \framesubtitle{...czyli 150 lat do CPU}
+
+    {\small
+    \begin{labeling}{1822}
+    \item[1822] Difference Engine\footnote{{\tiny skonstruowany w londyńskim
+        Science Museum w 1991}} -- Charles Babbage
+    \item[1837] Analytical Engine -- Charles Babbage hardware\footnote{\tiny
+        zbudował prototyp CPU w 1871} \footnote{{\tiny w 1906 jego syn, Henry Babbage,
+        zbuduje kompletene CPU}}, a Ada Lovelace software
+    \item[1941] Konrad Zuse -- Z3, pierwszy programowalny
+        komputer\footnote{{\tiny zniszczony podczas bombardowania Berlina przez
+        Aliantów}}
+    \item[1944] Harvard Mark I -- drugi programowalny komputer
+    \item[1971] Intel 4004 -- 4-bitowy mikroprocesor
+    \end{labeling}}
+
+    W 2016 UK pozwoliło sprzedać ARM -- czyli po raz drugi wypuścili z rąk ważny
+    kawałek technologii.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Architektury CPU}
+
+    \begin{labeling}{1837}
+        \item[1837] Analytical Engine
+        \item[1978] x86
+        \item[1985] ARM, MIPS
+        \item[1991] PowerPC
+        \item[2001] Itanium {\tiny (VLIW; \emph{failed})}
+        \item[2003] Mill {\tiny (VLIW; \emph{in development})}
+        \item[2010] RISC-V
+    \end{labeling}
+\end{frame}
+
+\section{Wstęp do komputerów}
+
+\begin{frame}
+    \frametitle{von Neumann}
+
+    \begin{enumerate}
+        \item CPU
+        \item RAM
+        \item pamięć masowa
+        \item I/O
+    \end{enumerate}
+\end{frame}
+
+\section{Wstęp do języków programowania}
+
+\begin{frame}
+    \frametitle{A co to?}
+
+    Sposób na wyrażenie swoich żądań względem maszyny.
+
+    \vspace{1em}
+
+    Kontrakt z demonem -- spełnia rozkazy \emph{dokładnie tak jak są
+    wypowiedziane}, bez oglądania się na \emph{intencje} programisty.
+\end{frame}
+
+\begin{frame}
+    \frametitle{A po co to komu?}
+    {\tt mov eax, 0x2a} \textsubscript{(x86)}\\
+    vs\\
+    {\tt auto x = int\{42\};} \textsubscript{(C++)}
+
+    \vspace{2em}
+
+    Dużo prostsze wydawanie maszynie skomplikowanych rozkazów, i łatwość
+    zrozumienia znaczenia programu.\\
+    Automatyczna alokacja rejestrów i pamięci; automatyczne skoki; ergonomiczna
+    semantyka.
+
+    \vspace{1em}
+
+    Przenośność (ang. \emph{portability}) programów między platformami.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Umowny podział}
+
+    \begin{enumerate}
+        \item compiled \emph{vs} interpreted (JIT?)
+        \item typing: static \emph{vs} dynamic, strong \emph{vs} weak
+        \item paradigm\footnote{Seven Languages in Seven Weeks; Bruce A. Tate;
+            ISBN-13: 978-1-934356-59-3}: functional \emph{vs} object-oriented
+            \emph{vs} structural \emph{vs} prototype-based \emph{vs} ...
+        \item rodziny: C-like (pochodne po języku ALGOL), ML-like, Lisp-like
+        \item ''toy'' \emph{vs} ''real''
+    \end{enumerate}
+
+    \vspace{1em}
+
+    \begin{labeling}{Smalltalk}
+        \item[C] compiled, static-weak typing, structural
+        \item[C++] compiled, static-strong typing, multiparadigm
+        \item[Smalltalk] interpreted, dynamic-strong, object-oriented
+        \item[OCaml] compiled, static-strong, functional
+        \item[Perl] interpreted, dynamic-weak, multiparadigm
+    \end{labeling}
+\end{frame}
+
+\section{Składniki języka}
+
+\begin{frame}
+    \frametitle{Co jest potrzebne w języku?}
+
+    ?{\tiny \textsubscript{(pytanie do sali)}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Z punktu widzenia prostego człowieka}
+
+    \begin{enumerate}
+        \item \emph{control flow} -- mechanizmy przepływu kontroli, czyli
+            sterowania programem
+        \item \emph{data structures} -- reprezentacja struktur danych
+        \item \emph{I/O} -- zapis i odczyt danych, czyli sposób na interakcję ze
+            światem zewnętrznym
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Jackson Structured Programming}
+    \framesubtitle{Control flow}
+
+    Michael Jackson, 1975; Principles of Program Design
+
+    \vspace{1em}
+
+    \begin{enumerate}
+        \item \emph{sequence} -- sekwencjonowanie, czyli ustalenie kolejności
+            wykonywania operacji
+        \item \emph{selection} (\emph{alternative}) -- wybór (alternatywa),
+            czyli decyzja o podjęciu jednej z kilku różnych ścieżek wykonania
+        \item \emph{iteration} -- iteracja, czyli powtarzanie tych samych kroków
+            $n$ razy
+    \end{enumerate}
+
+    \vspace{1em}
+
+    Nadaje się do opisu algorytmów, ale nie za bardzo do czegoś więcej. Często
+    tak jest z różnymi modelami -- są wygodne w teorii, ale niezbyt praktyczne.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Warnier/Orr}
+    \framesubtitle{Control flow}
+
+    Jean-Dominique Warnier, 1976; Logical construction of programs\\
+    Kenneth Orr, 1977; Structured systems development
+
+    \vspace{1em}
+
+    \begin{enumerate}
+        \item \emph{recursion} -- rekurencja, czyli sposób na zagnieżdżone
+            wykonywanie operacji
+        \item \emph{concurrency} -- współbieżność, czyli sposób na wykonywanie
+            kilku operacji ''w tym samym czasie'' (naprzemiennie na jednym
+            procesorze, lub równolegle\footnote{ten wariant nazywa się
+            \emph{parallelism}, i czasem jest podawany obok współbieżności jako
+            coś innego} na wielu)
+    \end{enumerate}
+
+    \vspace{1em}
+
+    Rekurencja i współbieżność są nieodłącznymi elementami programów, które
+    działają w ''prawdziwym świecie''. Bez nich niemożliwe byłoby interaktywne
+    używanie komputerów.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Michael Scott}
+    \framesubtitle{Control flow}
+
+    Michael Lee Scott, 2000; Programming language pragmatics\footnote{ISBN
+    1-55860-442-1}
+
+    \vspace{1em}
+
+    \begin{enumerate}
+        \item \emph{procedural abstraction} -- zbiór operacji opakowany w sposób
+            umożliwiający ich wspólne wywołanie, w skrócie: funkcja
+        \item \emph{nondeterminacy} -- niedeterminizm, czyli sposób na
+            zapewnienie losowości przy wyborze ściezki wykonania
+        \item \emph{exceptions*} -- wyjątki, pozwalające na ''skok'' kontroli w
+            przypadku wystąpienia błędu
+    \end{enumerate}
+
+    \vspace{1em}
+
+    Funkcje i niedeterminizm zamykają bazowe mechanizmy, które służą kontroli
+    przepływu.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Podsumowanie}
+    \framesubtitle{Control flow}
+
+    \begin{enumerate}
+        \item \emph{sequence}
+        \item \emph{selection}
+        \item \emph{iteration}
+        \item \emph{recursion}
+        \item \emph{concurrency}
+        \item \emph{procedural abstraction}
+        \item \emph{nondeterminism}
+        \item \emph{exceptions*}
+    \end{enumerate}
+
+    Egzotyczne metody kontroli przepływu -- \emph{continuations},
+    \emph{coroutines}.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Bit, nibble\footnote{połowa bajtu, czyli 4 bity}, byte, word,
+        half-word, double-word, quad-word...}
+    \framesubtitle{Data structures}
+
+    \epigraph{Na początku było słowo}{J 1,1-3}
+
+    Bit - czyli wartość mogąca przechowywać $0$ lub $1$.
+
+    Podstawową jednostką danych obsługiwanych przez CPU jest ''słowo'' -
+    sekwencja bitów o pojedynczego długości rejestru. Dla architektury x86-64
+    długość słowa to 64 bity.
+
+    Zapis i odczyt słowa w pamięci zazwyczaj są \emph{operacjami atomowymi} co
+    ma znaczenie dla programowania współbieżnego.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Liczby całkowite, ułamki, wartości logiczne}
+    \framesubtitle{Data structures}
+
+    Liczby całkowite - ze znakiem ({\tt signed}), bez znaku ({\tt unsigned}).\\
+    Liczby zmiennoprzecinkowe - pojedynczej precyzji, podwójnej precyzji.\\
+    Wartości logiczne - prawda, fałsz.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Znaki, napisy}
+    \framesubtitle{Data structures}
+
+    Znaki\footnote{kiedyś były najczęśniej szerokości 1 bajty (ASCII), ale
+    obecnie, od upowszechnienia się standardu Unicode, są zazwyczaj zmiennej
+    długości (UTF-8)} - reprezentujące pojedynczy glif (literę, znak
+    interpunkcyjny, itd.) lub symbol kontrolny.\\
+    Napisy - reprezentujące sekwencje znaków (np. {\tt ''Hello, World!''}).
+\end{frame}
+
+\begin{frame}
+    \frametitle{Lista, kolejka, stos, zbiór, drzewo, krotka...}
+    \framesubtitle{Data structures}
+
+    {\scriptsize
+    \begin{enumerate}
+        \item \emph{list} -- lista, czyli poszeregowana sekwencja wartości typu
+            $T$, do których daje dostęp w dowolnej kolejności (ang.
+            \emph{random~access})
+        \item \emph{queue} -- kolejka, czyli poszeregowana sekwencja wartości
+            typu $T$, do których daje dostęp na zasadzie \emph{FIFO}
+        \item \emph{stack} -- stos, czyli poszeregowana sekwencja wartości
+            typu $T$, do których daje dostęp na zasadzie \emph{LIFO}
+        \item \emph{set} -- zbiór, nieposzeregowana kolekcja wartości typu $T$
+        \item \emph{tree} -- drzewo, często wykorzystywane do budowania
+            ''map'' czyli struktur asocjacyjnych pozwalających na przechowanie
+            wartości typu $T$ pod kluczem typu $K$
+        \item \emph{tuple} -- krotka, czyli struktura danych zawierająca $n$ pól
+            typów $T_0$, $T_1$, ..., $T_n$
+    \end{enumerate}}
+
+    Podstawową złożoną strukturą danych jest \emph{tablica}, czyli sekwencja $n$
+    elementów typu $T$. Bazując na tablicach bajtów (czyli de facto surowych,
+    wydzielonych obszarach pamięci) można zaimplementować wszystkie powyższe
+    struktury danych.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Typy użytkownika}
+    \framesubtitle{Data structures}
+
+    \begin{labeling}{\emph{struct}}
+        \item[\emph{enum}] wyliczenie, czyli zdefiniowany zbiór wartości, które
+            dany typ może przechować (vide \emph{sum~type})
+        \item[\emph{struct}] struktura, czyli typ złożony z kilku pól różnych
+                typów -- może przechowywać wszystkie kombinacje wartości pól
+                (vide \emph{product~type})
+    \end{labeling}
+
+    Języki programowania często zapewniają programistom możliwość tworzenia
+    własnych typów danych.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Wskaźniki i dynamiczna alokacja pamięci}
+    \framesubtitle{Data structures}
+
+    Implementacja wielu struktur danych (np. list lub napisów o zmiennej
+    długości) byłaby niemożliwa bez wskaźników i dynamicznej alokacji pamięci.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Podsumowanie}
+    \framesubtitle{Data structures}
+
+    \begin{enumerate}
+        \item słowo (\emph{word}), bajt (\emph{byte}), bit
+        \item tablica (\emph{array})
+        \item typy użytkownika (\emph{user-defined type} -- \emph{enum},
+            \emph{struct})
+        \item wskaźnik (\emph{pointer})
+        \item dynamiczna alokacja pamięci (\emph{memory allocation})
+        \item typy proste \emph{vs} typy złożone
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Operacje wejścia-wyjścia}
+    \framesubtitle{I/O}
+
+    Sposób na interakcję i wymianę danych ze ''światem zewnętrznym'', czyli
+    wszystkim tym co dzieje się poza CPU i pamięcią operacyjną (RAM).
+
+    \begin{enumerate}
+        \item \emph{I/O port}, \emph{MMU} (ang. \emph{memory management unit}),
+            \emph{memory-mapped I/O}
+        \item \emph{file-descriptor}, \emph{socket} (ten sam interfejs dla
+            plików i połączeń w sieci; POSIX)
+        \item \emph{memory-mapped file}
+    \end{enumerate}
+
+    Zapisując i odczytując bajty da się obsłużyć każdy rodzaj urządzenia -
+    monitor, klawiaturę, dysk, ramię robota, silnik, itd.
+\end{frame}
+
+\end{document}

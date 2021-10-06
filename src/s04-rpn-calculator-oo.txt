@@ -1,0 +1,7 @@
+# main()
+
+W konsoli:
+
+    $ ./build/s04-rpn-calculator-oo.bin 2.1 2.1 + p 2 * p
+    4.2
+    8.4

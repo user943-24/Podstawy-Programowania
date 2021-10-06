@@ -1,0 +1,516 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{epigraph}
+
+\renewcommand{\epigraphsize}{\scriptsize}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{000000}
+\setbeamercolor{lower separation line head}{bg=xbarcolor}
+\setbeamercolor{lower separation line foot}{bg=xbarcolor}
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{Wątki}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={[*}{*]},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{red}]{@}{@},
+moredelim=**[is][\color{gray}]{`}{`},
+moredelim=**[is][\color{olive}]{$}{$}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{Wstęp}
+
+\begin{frame}
+    \frametitle{Po co wątki w C++?}
+
+    Wątki w C++ są narzędziem, które można wykorzystać do kilku celów. Nie
+    znaczy to, że są najlepszym możliwym rozwiązaniem! Są jedynie podstawą,
+    która umożliwia stworzenie i wykorzystanie bardziej eleganckich mechanizmów.
+
+    \vspace{1em}
+
+    Wątki są również sposobem na wprowadzenie do programów
+    \textbf{współbieżności}~(ang. \emph{concurrency}) i
+    \textbf{równoległości}~(ang. \emph{parallelism}).
+\end{frame}
+
+\begin{frame}
+    \frametitle{Współbieżność (ang. concurrency)}
+
+    Wykonywanie przez program kilku zadań naraz (ale niekoniecznie
+    \emph{jednocześnie}).
+
+    \vspace{1em}
+
+    Iluzja wykonywania przez program kilku zadań naraz może być zapewniona,
+    dzięki szybkiemu przełączaniu się między częściowo wykonanymi zadaniami.
+
+    \vspace{1em}
+
+    Przykład: program kopiujący $k$ plików. Program może skopiować plik $n$ w
+    całości, po czym przejść do kopiowania pliku $n+1$ i działać sekwencyjnie.
+    Może też kopiować fragmenty plików od $n$ do $n+k$ i działać współbieżnie
+    (dzięki temu małe pliki mogą być skopiowane w całości szybciej).
+\end{frame}
+
+\begin{frame}
+    \frametitle{Równoległość (ang. parallelism)}
+
+    Wykonywanie przez program kilku zadań \emph{jednocześnie} (w tym samym
+    kwancie czasu).
+
+    \vspace{1em}
+
+    Równoległość możliwa jest do osiągnięcia dzięki wykorzystaniu w programie
+    wielu procesorów (na tym samym fizycznym komputerze, lub w systemie
+    rozproszonym).
+
+    \vspace{1em}
+
+    Przykład: program kopiujący $k$ plików. Program może podzielić listę plików
+    do skopiowania na $n$ procesorów, i każdemu przekazać do obsłużenia $k/n$
+    plików.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Współbieżność \emph{vs} równoległość}
+
+    Współbieżność \emph{nie zawsze} oznacza równoległość.\\
+    Równoległość \emph{zawsze} oznacza współbieżność.
+
+    \vspace{1em}
+
+    Współbieżność jest sposobem na modelowanie zachowania i podział zadań
+    wewnątrz programu. Równoległość jest sposobem na pełniejsze wykorzystanie
+    zasobów systemu.
+\end{frame}
+
+\section{Wątki w C++}
+
+\begin{frame}[fragile]
+    \frametitle{\texttt{std::thread}}
+    \framesubtitle{Wątek czyli \texttt{std::thread}}
+
+    Wątki tworzy się za pomocą typu \texttt{std::thread} z nagłówka
+    \texttt{<thread>}.
+
+    \vspace{1em}
+
+    Utworzenie wątku oznacza rozpoczęcie współbieżnego wykonywania funkcji,
+    która została przekazana do konstruktora typu \texttt{std::thread}
+    {\small
+    \begin{lstlisting}
+    auto a_thread = std::thread{
+          some_function
+        , 42
+        , "Hello, World!"
+    };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{,,Dołączanie'' wątków}
+    \framesubtitle{\texttt{std::thread}}
+
+    Za pomocą funkcji składowej \texttt{std::thread::join} można ,,dołączyć''
+    wątek reprezentowany jakąś zmienną do wątku, z którego ta funkcja jest
+    wywołana.
+
+    \vspace{1em}
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto errand_boy = std::thread{run_some_errands, std::move(errands)};
+    errand_boy.join();  $// wait until the errand boy returns...$
+    \end{lstlisting}}
+
+    \vspace{1em}
+
+    Wątek wywołujący funkcję \texttt{std::thread::join} jest zablokowany do
+    momentu aż wątek ,,dołączany'' nie zakończy działania.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{,,Odcinanie'' wątków}
+    \framesubtitle{\texttt{std::thread}}
+
+    Za pomocą funkcji składowej \texttt{std::thread::detach} można ,,odciąć''
+    wątek i uniemożliwić jego dołączenie do innego wątku. Pozwala to odciętemu
+    wątkowi działać nawet jeśli żaden inny wątek nie posiada jego
+    ,,uchwytu''\footnote{\emph{thread handle}}:
+
+    \vspace{1em}
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto fire_and_forget = std::thread{launch_missile, std::move(target)};
+    fire_and_forget.detach();  $// too late to change our mind now...$
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: drukowanie napisów}
+    \framesubtitle{\texttt{std::thread}}
+    \label{lecture_exercise_0}
+
+    Napisz program, który uruchomi 42 wątki drukujące napis ,,\texttt{Hello,
+    X!}''.
+
+    \texttt{X} musi być różne dla każdego wątku (mogą to być różne imiona, różne
+    liczby, itp.).
+
+    Wykorzystaj funkcję \texttt{std::thread::detach}.
+
+    \vspace{1em}
+
+    Kod w pliku \texttt{src/s05-print-thread.cpp}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: drukowanie grup napisów}
+    \framesubtitle{\texttt{std::thread}}
+    \label{lecture_exercise_1}
+
+    Napisz program, który uruchomi 42 wątki drukujące napis ,,\texttt{Hello,
+    X!}''.
+
+    \texttt{X} musi być różne dla każdego wątku (mogą to być różne imiona, różne
+    liczby, itp.).
+
+    Wątki mają być uruchamiane grupami po 6 naraz. Wykorzystaj funkcję
+    \texttt{std::thread::join} do czekania na zakończenie wątku.
+
+    \vspace{1em}
+
+    Kod w pliku \texttt{src/s05-print-thread-group.cpp}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Sekcje krytyczne}
+
+    Sekcja krytyczna to fragment kodu, który może być wykonywany przez jeden
+    wątek naraz. Takie fragmenty kodu powinny być zabezpieczone przed
+    współbieżnym wykonaniem.
+
+    \vspace{1em}
+
+    \textbf{Jak rozpoznać, że coś jest sekcją krytyczną?}
+
+    Sekcja krytyczna dotyka (manipuluje, odczytuje, itd.) danych, które widoczne
+    są z potencjalnie wielu wątków.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zabezpieczenie sekcji krytycznych}
+    \framesubtitle{Sekcje krytyczne}
+
+    Najprościej jest wykorzystać typy \texttt{std::mutex}\footnote{\emph{mutex}
+    od \emph{mutual exclusion}} do zabezpieczenia danych, oraz
+    \texttt{std::lock\_guard} lub \texttt{std::unique\_lock} do zablokowania
+    wątku w oczekiwaniu na dostęp do sekcji krytycznej.
+
+    \vspace{1em}
+
+    Zabezpieczenie danych:
+    {\scriptsize
+    \begin{lstlisting}
+    auto foo = some_type{};
+    std::mutex foo_mtx;  $// mutex for foo$
+    \end{lstlisting}}
+
+    Oczekiwanie na dostęp do sekcji krytycznej:
+    {\scriptsize
+    \begin{lstlisting}
+    std::lock_guard<std::mutex> lck { foo_mtx };
+    $// or...$
+    std::unique_lock<std::mutex> lck { foo_mtx };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: lista zadań}
+    \framesubtitle{\texttt{std::thread}}
+    \label{lecture_exercise_2}
+
+    Napisz program, w którym uruchomisz cztery wątki pobierające ze
+    wspólnej\footnote{potrzebna będzie tu referencja lub wskaźnik} kolejki
+    \texttt{std::queue} liczby do wydrukowania. Pobieranie liczb powinno być
+    sekcją krytyczną.
+
+    Każdemu z wątków przydziel ID (przekazywane jako argument podczas tworzenia
+    wątku). Drukowane linie powinny mieć następujący format:
+
+    {\scriptsize
+    \begin{lstlisting}
+    from thread @THREAD-ID@: @NUMBER-TO-PRINT@
+    \end{lstlisting}}
+
+    Niech wątki zakończą działanie kiedy wykryją, że wektor z liczbami do
+    wydrukowania jest pusty.
+
+    \vspace{1em}
+
+    Kod w pliku \texttt{src/s05-job-queue.cpp}
+\end{frame}
+
+\section{Komunikacja między wątkami}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: śpiące wątki}
+    \framesubtitle{\texttt{std::thread}}
+    \label{lecture_exercise_3}
+
+    {\small
+    Uruchom 4 wątki pobierające rzeczy do wydrukowania ze wspólnej kolejki (jak
+    w poprzednim zadaniu). Niech wątki kończą pracę kiedy dostaną pusty
+    \texttt{std::string} i drukują \texttt{thread X exiting} kiedy kończą pracę.
+    Kiedy wątek wykryje, że kolejka jest pusta niech zwolni mutex i pójdzie spać
+    na losową wartość milisekund między 10, a 100.
+
+    \vspace{1em}
+
+    W funkcji \texttt{main()} odczytuj napisy ze standardowego strumienia
+    wejścia i odczytane napisy odkładaj na kolejkę, z której czytają wątki
+    drukujące.
+    Zakończ pętlę po otrzymaniu 4 pustych napisów.
+
+    \vspace{1em}
+
+    Kod w pliku \texttt{src/s05-sleeping-threads.cpp}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Oczekiwanie na, i sygnalizacja warunku}
+    \framesubtitle{\texttt{std::condition\_variable}}
+
+    Kod taki jak w zadaniu ze śpiącymi wątkami jest nieefektywny, mało
+    czytelny, i - powiedzmy to jasno - kiepski. Jeśli \emph{oczekujemy} na
+    wystąpienie jakiegoś warunku (np. nadejście zadania) to dużo lepszy jest
+    kod, który realizuje to w sposób jawny.
+
+    \vspace{1em}
+
+    Typ \texttt{std::condition\_variable} z nagłówka
+    \texttt{<condition\_variable>} pozwala to zrealizować w prosty sposób.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Przygotowanie}
+    \framesubtitle{\texttt{std::condition\_variable}}
+
+    Żeby móc oczekiwać na warunek potrzebujemy następujących rzeczy:
+    \begin{enumerate}
+        \item zmiennej typu \texttt{std::condition\_variable}, której będziemy
+            używać do oczekiwania i sygnalizacji warunku
+        \item zmiennej typu \texttt{std::mutex}, na której będziemy blokować
+            nasz condition variable
+        \item dodatkowej zmiennej przechowującej dane, które
+            powinniśmy sprawdzić po zajściu warunku (np. kolejki rzeczy do
+            wydrukowania)
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Przygotowanie (c.d.)}
+    \framesubtitle{\texttt{std::condition\_variable}}
+
+    {\small
+    \begin{lstlisting}
+    $// this is our communication channel$
+    std::queue<std::string> items_to_print;
+
+    $// the mutex protects it from concurrent access$
+    std::mutex mtx;
+
+    $// the condition_variable is used to signal
+    // arrival of new data$
+    std::condition_variable cv;
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Oczekiwanie na zajście warunku}
+    \framesubtitle{\texttt{std::condition\_variable}}
+
+    Oczekiwanie na zajście warunku jest realizowane funkcjami składowymi
+    \texttt{std::condition\_variable::wait} (czekanie w nieskończoność) i
+    \texttt{std::condition\_variable::wait\_for} (czekanie przez określony
+    czas).
+
+    \vspace{1em}
+
+    Obie funkcje żądają przekazania im jako argumentu wartości typu
+    \texttt{std::unique\_lock} zablokowanej na muteksie, który chroni dane
+    będące kanałem komunikacji:
+
+    {\scriptsize
+    \begin{lstlisting}
+    $// lock the mutex$
+    std::unique_lock<std::mutex> lck { mtx };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Oczekiwanie na zajście warunku (c.d.)}
+    \framesubtitle{\texttt{std::condition\_variable}}
+
+    Jeśli jesteśmy w stanie pozwolić sobie na czekanie w nieskończoność możemy
+    użyć prostego \texttt{wait}:
+    {\scriptsize
+    \begin{lstlisting}
+    $// unlock the mutex, block calling thread, and
+    // wait for a notification (ad inifinitum)$
+    cv.wait(lck);
+    \end{lstlisting}}
+
+    Jeśli jednak w określonym czasie musimy podjąć jakieś działanie niezależnie
+    od tego czy otrzymaliśmy komunikat czy nie, należy użyć \texttt{wait\_for}:
+    {\scriptsize
+    \begin{lstlisting}
+    $// unlock the mutex, block calling thread, and
+    // wait for a notification for about 1 second$
+    cv.wait(lck, std::chrono::seconds{1});
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Sygnalizacja warunku}
+    \framesubtitle{\texttt{std::condition\_variable}}
+
+    {\small
+    \begin{lstlisting}
+    $// lock the mutex and modify communication channel...$
+    {
+        std::lock_guard<std::mutex> lck { mtx };
+        items_to_print.push("Hello, World!");
+    }
+
+    $// notify just one of the waiting threads...$
+    cv.notify_one();
+
+    $// ...or notify all of them$
+    cv.notify_all();
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: śpiące wątki 2}
+    \framesubtitle{\texttt{std::thread}}
+    \label{lecture_exercise_4}
+
+    {\small
+    Uruchom 4 wątki pobierające rzeczy do wydrukowania ze wspólnej kolejki (jak
+    w poprzednim zadaniu). Niech wątki kończą pracę kiedy dostaną pusty
+    \texttt{std::string} i drukują \texttt{thread X exiting} kiedy kończą pracę.
+
+    Niech wątki oczekują na rzeczy do wydrukowania z wykorzystaniem funkcji
+    \texttt{std::condition\_variable::wait}.
+
+    \vspace{1em}
+
+    W funkcji \texttt{main()} odczytuj napisy ze standardowego strumienia
+    wejścia i odczytane napisy odkładaj na kolejkę, z której czytają wątki
+    drukujące.
+    Zakończ pętlę po otrzymaniu 4 pustych napisów.
+
+    \vspace{1em}
+
+    Kod w pliku \texttt{src/s05-sleeping-threads-2.cpp}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: śpiące wątki 3}
+    \framesubtitle{\texttt{std::thread}}
+    \label{lecture_exercise_5}
+
+    Tak jak w ,,śpiące wątki 2'', ale z użyciem typu \texttt{itp::channel} z
+    repozytorium szablonowego.
+
+    \vspace{1em}
+
+    Kod w pliku \texttt{src/s05-sleeping-threads-3.cpp}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: ping-pong}
+    \framesubtitle{\texttt{std::thread}}
+    \label{lecture_exercise_6}
+
+    {\small
+    Uruchom dwa wątki - jeden z identyfikatorem ,,ping'', drugi ,,pong''.
+    Niech oba wątki wymieniają się liczbą całkowitą ,,odbijając'' ją między
+    sobą.
+
+    Wątek powinien relizować w pętli następującą logikę:
+    \begin{enumerate}
+        \item czekać na komunikat o otrzymaniu liczby
+        \item wydrukować liczbę poprzedzoną swoim identyfikatorem (np.
+            \texttt{ping 7})
+        \item zwiększyć liczbę o losową wartość między 1, a 42
+        \item poinformować drugi wątek o tym, że teraz jego kolej
+        \item jeśli liczba była większa niż 1024 zakończyć działanie
+    \end{enumerate}
+
+    Pierwszą liczbę wyślij do wątku ,,ping'' z funkcji \texttt{main()}.
+
+    \vspace{1em}
+
+    Kod w pliku \texttt{src/s05-ping-pong.cpp}}
+\end{frame}
+
+\section{Podsumowanie}
+
+\begin{frame}
+    \frametitle{Co nowego?}
+    \frametitle{Podsumowanie}
+
+    Student powinien umieć:
+
+    \begin{enumerate}
+        \item wykorzystać wątki do wprowadzenie współbiezności i równoległości w
+            programie
+        \item wytłumaczyć do czego służą typy \texttt{std::mutex},
+            \texttt{std::unique\_lock}, i \texttt{std::lock\_guard}
+        \item wytłumaczyć czym jest sekcja krytyczna
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadania}
+    \framesubtitle{Podsumowanie}
+
+    Zadania znajdują się na slajdach
+    \ref{lecture_exercise_0},
+    \ref{lecture_exercise_1},
+    \ref{lecture_exercise_2},
+    \ref{lecture_exercise_3},
+    \ref{lecture_exercise_4},
+    \ref{lecture_exercise_5},
+    \ref{lecture_exercise_6}.
+\end{frame}
+
+\end{document}

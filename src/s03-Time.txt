@@ -1,0 +1,168 @@
+# Time::to_string()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    std::cout << time.to_string() << "\n";
+
+Wynik:
+
+    23:59:59
+
+--------------------------------------------------------------------------------
+
+# Time::next_hour()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    time.next_hour();
+    std::cout << time.to_string() << "\n";
+
+Wynik:
+
+    00:59:59
+
+--------------------------------------------------------------------------------
+
+# Time::next_minute()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    time.next_minute();
+    std::cout << time.to_string() << "\n";
+
+Wynik:
+
+    00:00:59
+
+--------------------------------------------------------------------------------
+
+# Time::next_second()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    time.next_hour();
+    std::cout << time.to_string() << "\n";
+
+Wynik:
+
+    00:00:00
+
+--------------------------------------------------------------------------------
+
+# Time::time_of_day()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    std::cout << s12345::to_string(time.time_of_day()) << "\n";
+
+Wynik:
+
+    Night
+
+--------------------------------------------------------------------------------
+
+# Time::operator+()
+
+Kod:
+
+    auto a = s12345::Time{ 23, 59, 59 };
+    auto b = s12345::Time{  0,  0,  1 };
+    std::cout << (a + b).to_string() << "\n";
+
+Wynik:
+
+    00:00:00
+
+--------------------------------------------------------------------------------
+
+# Time::operator-()
+
+Kod:
+
+    auto a = s12345::Time{  3, 59, 59 };
+    auto b = s12345::Time{  4,  0,  0 };
+    std::cout << (a - b).to_string() << "\n";
+
+Wynik:
+
+    23:59:59
+
+--------------------------------------------------------------------------------
+
+# Time::operator<()
+
+Kod:
+
+    auto a = s12345::Time{ 23, 59, 59 };
+    auto b = s12345::Time{  0,  0,  1 };
+    if (a > b) {
+        std::cout << a.to_string() << " > " << b.to_string() << "\n";
+    } else {
+        std::cout << a.to_string() << " ? " << b.to_string() << "\n";
+    }
+
+Wynik:
+
+    23:59:59 > 00:00:01
+
+--------------------------------------------------------------------------------
+
+# Time::operator==()
+
+Kod:
+
+    auto a = s12345::Time{ 23, 59, 59 };
+    auto b = s12345::Time{  0,  0,  1 };
+    if (a == b) {
+        std::cout << a.to_string() << " == " << b.to_string() << "\n";
+    } else {
+        std::cout << a.to_string() << " != " << b.to_string() << "\n";
+    }
+
+Wynik:
+
+    23:59:59 != 00:00:01
+
+--------------------------------------------------------------------------------
+
+# Time::count_seconds()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    std::cout << time.count_seconds() << "\n";
+
+Wynik:
+
+    86399
+
+--------------------------------------------------------------------------------
+
+# Time::count_minutes()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    std::cout << time.count_minutes() << "\n";
+
+Wynik:
+
+    1439
+
+--------------------------------------------------------------------------------
+
+# Time::time_to_midnight()
+
+Kod:
+
+    auto time = s12345::Time{ 23, 59, 59 };
+    std::cout << time.time_to_midnight().to_string() << "\n";
+
+Wynik:
+
+    00:00:01

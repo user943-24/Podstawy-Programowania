@@ -1,0 +1,188 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{0f2f0f}
+\setbeamercolor{lower separation line head}{bg=xbarcolor} 
+\setbeamercolor{lower separation line foot}{bg=xbarcolor} 
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{Sprawy organizacyjne, plan zajęć, narzędzia}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={\%*}{*)},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{red}]{@}{@}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{Sprawy organizacyjne}
+
+\begin{frame}
+    \frametitle{Kontakt z prowadzącym}
+
+    MS Teams lub email ({\tt marecki@pjwstk.edu.pl}).\\
+    Lepiej email.
+\end{frame}
+
+% \begin{frame}
+%     \frametitle{Zwolnienia z zajęć}
+
+%     Negocjowane indywidualnie (przez email - w tej kwestii komunikacja musi być
+%     oficjalna).
+%     Wymagana udokumentowana znajomość języka C++.
+
+%     \vspace{1em}
+
+%     Zwolnienie z zajęć nie zwalnia z napisania projektu (trzeba mieć dla uczelni
+%     jakiś ślad).
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Zaliczenie zajęć}
+
+    \begin{enumerate}
+        \item aktywność w trakcie semestru -- pisanie programów i oddawanie ich
+            na czas
+        \item projekt oddany na koniec semestru (temat ustalany indywidualnie)
+    \end{enumerate}
+
+    \vspace{1em}
+
+    Na ocenę liczy się projekt, ale nie można oddać projektu nie mając
+    zrobionych zadań.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Śledzenie zmian w kodzie}
+
+    Zmiany w kodzie student rejestruje używając narzędzia Git.\\
+    Wymagane jest konto w serwisie Github: s\emph{indeks}, np. s12345. Powinno
+    być założone na uczelniany adres email.
+\end{frame}
+
+\section{Plan zajęć}
+
+\begin{frame}
+    \frametitle{Płytka woda}
+
+    Pierwsza połowa semestru obejmuje wprowadzenie do programowania jako
+    takiego, przedstawienie fundamentów teoretcznych języków programowania, i
+    zapoznanie się z podstawami języka C++.
+
+    \vspace{1em}
+
+    Zajęcia polegają na poznawaniu kolejnych konstrukcji języka C++ i pisaniu
+    programów mających na celu ogólne obycie się studenta z programowaniem i
+    narzędziami rzemiosła.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Głębkoa woda}
+
+    Druga połowa semestru jest wykorzystana na projekt: napisanie przez studenta
+    pojedynczego, rozbudowanego programu. Tematy projektów ustalane są
+    indywidualnie.
+
+    \vspace{1em}
+
+    Zajęcia polegają na rozwiązywaniu prawdziwych problemów napotkanych przez
+    studentów i poznawanie bardziej zaawansowanych aspektów języka.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Dżentelmeńska umowa}
+
+    Na zajęcia $n$ student przychodzi mając opanowany materiał z zajęć $n-1$.
+
+    \vspace{1em}
+
+    Indywidualne wątpliwości i problemy związane z przedmiotem rozwiązywane są
+    wraz z prowadzącym pomiędzy zajęciami.
+\end{frame}
+
+\section{Narzędzia}
+
+\begin{frame}
+    \frametitle{System operacyjny}
+
+    Zajęcia prowadzone są na systemie Linux (dowolna dystrybucja).
+
+    {\tiny Maszyna wirtualna do zajęć:
+    \url{http://edu.marecki.me/Podstawy_programowania.ova}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Kompilator}
+    Wymagane kompilatory to GCC lub Clang w najnowszej dostępnej wersji.
+
+    Kod źródłowy musi być formatowany narzędziem {\tt clang-format}; reguły
+    formatowania udostępnia prowadzący zajęcia (do negocjacji).
+
+    {\tiny Link do reguł:
+    {\tt
+    \url{https://git.sr.ht/~maelkum/education-introduction-to-programming-cxx/blob/master/.clang-format}}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Flagi kompilacji}
+
+    Kod źródłowy jest kompilowany użwając standardu C++14.
+
+    Kod źródłowy musi kompilować się bez żadnych ostrzeżeń
+    (\emph{warnings}).
+
+    \vspace{1em}
+
+    Wymagane flagi, których należy używać:\\
+    {\tt
+    -Wall -Wextra -Werror -Wfatal-errors -pedantic -g
+    -Wzero-as-null-pointer-constant
+    -Wuseless-cast
+    -Wold-style-cast
+    -Wswitch-default
+    -Wswitch-enum
+    -Wconversion
+    -Wsign-conversion
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Szablon repozytorium}
+
+    Polecam sklonować repozytorim przedmiotu. Są tam przykładowe programy,
+    którymi można się posiłkować i plik {\tt Makefile}, który automatyzuje
+    proces budowania programów.
+
+    \vspace{1em}
+
+    \url{https://git.sr.ht/~maelkum/education-introduction-to-programming-cxx}
+
+    \vspace{2em}
+
+    {\small Repozytorium zawiera też dodatkowe materiały dotyczące narzędzi
+    używanych na zajęciach.}
+\end{frame}
+
+\end{document}

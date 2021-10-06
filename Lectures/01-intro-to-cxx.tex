@@ -1,0 +1,885 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{epigraph}
+
+\renewcommand{\epigraphsize}{\scriptsize}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{0f2f0f}
+\setbeamercolor{lower separation line head}{bg=xbarcolor} 
+\setbeamercolor{lower separation line foot}{bg=xbarcolor} 
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{Wstęp do C++}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={\%*}{*)},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{olive}]{$}{$},
+moredelim=**[is][\color{red}]{@}{@}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{C++}
+
+\begin{frame}
+    \frametitle{Język C++}
+
+    \begin{epigraphs}
+        \qitem{Piękno, harmonia, wdzięk, dobry rytm - wszystkie zależą od
+        prostoty.}{Platon, \emph{Republika}}
+
+        \qitem{If you think it's simple, then you have misunderstood the
+        problem.}{Bjarne Stroustrup, autor języka C++}
+    \end{epigraphs}
+
+    C++ jest rozbudowanym językiem oferującym wiele możliwości. Ceną za to jest
+    jego ogromne skomplikowanie, brak ``elegancji'', i pułapki czychające na
+    nieuważnego programistę.
+\end{frame}
+
+\section{Control flow}
+
+\begin{frame}
+    \frametitle{sequence}
+    \framesubtitle{Control flow}
+
+    Kontrola w języku C++ zaczyna się od pierwszej instrukcji w funkcji
+    {\tt main()}. Kolejne instrukcje wykonywane są w kolejności zdefiniowanej w
+    kodzie źródłowym, a większość z nich zakończona jest operatorem \textbf{{\tt ;}}
+
+    \vspace{1em}
+
+    Grupy instrukcji są ograniczane nawiasami klamrowymi \textbf{{\tt \{ \}}} i
+    traktowane jako pojedyncza (ale nie atomowa!) instrukcja.
+
+    \vspace{1em}
+
+    Wewnątrz instrukcji, kolejnością wykonania steruje również operator
+    \textbf{{\tt ,}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{sequence}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    auto x = 42@;@    // pierwsza instrukcja
+    auto y = x@;@     // druga instrukcja
+    print(y)@;@       // trzecia instrukcja
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{selection}
+    \framesubtitle{Control flow}
+
+    \begin{labeling}{{\tt if-else}}
+        \item[{\tt if-else}] wybiera następną instrukcję do wykonania na
+            podstawie wartości logicznej dowolnego wyrażenia
+        \item[{\tt switch}] wybiera nastepną instrukcję do wykonania na
+            podstawie wartości typu wyliczeniowego\footnote{nie jest to do końca
+            prawda -- można switchować na dowolnej wartości liczbowej, ale nie
+            jest to dobry pomysł}(\emph{enum})
+    \end{labeling}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{selection ({\tt if})}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    if (x < y) {
+        std::cout << "x less than y\n";
+    } else if (x > y) {
+        std::cout << "x greater than y\n";
+    } else if (x == y) {
+        std::cout << "x equals y\n";
+    } else {
+        std::cout << "something else\n";
+    }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{selection ({\tt if} -- operatory)}
+    \framesubtitle{Control flow}
+    \label{selection_comparison_ops}
+
+    Operatory porównania (poprzedni slajd) pozwalają na zbadanie relacji między
+    dwiema wartościami:
+
+    \begin{labeling}{$a$ {\tt ==} $b$}
+        \item[$a$ {\tt <} $b$] czy $a$ jest mniejsze od $b$
+        \item[$a$ {\tt >} $b$] czy $a$ jest większe od $b$
+        \item[$a$ {\tt <=} $b$] czy $a$ jest mniejsze od lub równe $b$
+        \item[$a$ {\tt >=} $b$] czy $a$ jest większe od lub równe $b$
+        \item[$a$ {\tt !=} $b$] czy $a$ jest różne od $b$
+        \item[$a$ {\tt ==} $b$] czy $a$ jest równe $b$
+    \end{labeling}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{selection ({\tt switch})}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    switch (x) {
+        case Maybe::Something:
+            std::cout << "it's something\n";
+            break;
+        case Maybe::Nothing:
+            std::cout << "it's nothing\n";
+            break;
+        default:
+            std::cout << "it's weird\n";
+            break;
+    }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{iteration}
+    \framesubtitle{Control flow}
+
+    \begin{labeling}{{\tt do-while}}
+        \item[{\tt while}] pętla wykonująca się dopóki wyrażenie kontrolne jest
+            prawdziwe, ze sprawdzeniem przed wykonaniem instrukcji
+        \item[{\tt do-while}] pętla wykonująca się dopóki wyrażenie kontrolne
+            jest prawdziwe, ze sprawdzeniem po wykonaniu instrukcji
+        \item[{\tt for}] pętla po zakresie
+    \end{labeling}
+
+    \vspace{1em}
+
+    Pętla {\tt while} jest najbardziej ogólną pętlą, ale wszystkie rodzaje są
+    równoważne (każdą z pętli da się zaimplementować w ramach każdej innej).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{iteration ({\tt while})}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    while (its_sunny_outside()) {
+        std::cout << "weather is nice\n";
+    }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{iteration ({\tt do-while})}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    auto x = 0;
+    do {
+        x = roll_dice();
+        std::cout << "you rolled " << x << "\n";
+    } while (x != 6);
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{iteration ({\tt for})}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    for (auto i = 10; i >= 0; --i) {
+        std::cout << i << '\n';
+    }
+    std::cout << "Happy New Year!\n";
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{procedural abstraction}
+    \framesubtitle{Control flow}
+
+    Funkcje spełniają rolę procedur w C++. Każda funkcja składa się z:
+
+    \begin{enumerate}
+        \item nazwy -- identyfikatora jakim można ją \emph{wywołać}
+        \item listy parametrów formalnych -- specyfikacji jakich
+            \emph{argumentów} (\emph{parametrów faktycznych}) wymaga od
+            wywołującego
+        \item typu zwracanego -- specyfikacji typu jakiego wartości funkcja
+            produkuje
+        \item ciała -- ograniczonego nawiasami klamrowymi zbioru instrukcji
+            określającego operacje jakich dana funkcja jest abstrakcją
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{procedural abstraction}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    auto add_one(int const x) -> int
+    {
+        return (x + 1);
+    }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{recursion}
+    \framesubtitle{Control flow}
+
+    Rekurencja jest realizowana za pomocą funkcji.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{recursion}
+    \framesubtitle{Control flow}
+
+    \begin{lstlisting}
+    /* Raises b to the power of n. */
+    auto exponentiate(int const b, int const n) -> int
+    {
+        if (n <= 0) {
+            return 1;
+        }
+        return (b * exponentiate(b, (n - 1)));
+    }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{concurrency and parallelism}
+    \framesubtitle{Control flow}
+
+    Współbieżność w C++ jest realizowana za pomocą \emph{wątków}. Tym samym
+    mechanizmem jest realizowana \emph{równoległość} przetwarzania
+    (\emph{parallelism}).
+
+    \vspace{1em}
+
+    Współbieżność można też zaimplementować na własną rękę, ale wymaga to
+    znacznie większego nakładu pracy.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{concurrency and parallelism ({\tt std::thread})}
+    \framesubtitle{Control flow}
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto display_greeting(std::string const name) -> void
+    {
+        std::cout << ("Hello, " + name + "!\n");
+    }
+
+    auto t1 = std::thread{display_greeting, "Joe"};    // Armstrong
+    auto t2 = std::thread{display_greeting, "Bjarne"}; // Stroustrup
+
+    /*
+     * Threads must be joined into the parent thread, or
+     * the program will crash.
+     */
+    t1.join();  // joining thread is blocked until joined
+                // thread terminates
+    t2.join();
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{nondeterminism}
+    \framesubtitle{Control flow}
+
+    Niedeterminizm jest nieodłączną cechą równoległości -- nie mamy gwarancji w
+    jakiej kolejności będą względem siebie wykonywac sie operacje w
+    \emph{różnych} wątkach.
+
+    \vspace{1em}
+
+    Niedeterminizm wewnątrz wątku możemy uzyskać generując liczby losowe. W tym
+    celu można użyć {\tt std::ranom\_device} lub odczytać $n$ bajtów z pliku
+    {\tt /dev/urandom}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{nondeterminism ({\tt std::random\_device})}
+    \framesubtitle{Control flow}
+
+    {\footnotesize
+    \begin{lstlisting}
+    std::random_device rd;
+    std::uniform_int_distribution<int> d20 (1, 20);
+
+    constexpr auto CRITICAL_SUCCESS = 20;
+    constexpr auto CRITICAL_FAILURE = 1;
+
+    auto const x = d20(rd);
+
+    if (x == CRITICAL_SUCCESS) {
+        std::cout << "you kill the monster in a single blow!\n";
+    } else if (x == CRITICAL_FAILURE) {
+        std::cout << "you wound yourself with your own sword!\n";
+    } else {
+        std::cout << "roll for damage.\n";
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{exceptions}
+    \framesubtitle{Control flow}
+
+    Mechanizmem dedykowanym sygnalizacji i obsługi błędów w C++ są
+    \emph{wyjątki}. Wyjątek może być rzucony (zasygnalizowany) słowem kluczowym
+    {\tt throw}; obsługa wyjątków odbywa się w bloku {\tt try-catch}.
+
+    \vspace{1em}
+
+    C++ pozwala na użycie dowolnego typu jako wyjątku.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{exceptions}
+    \framesubtitle{Control flow}
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto search_your_feelings(std::string father) -> void
+    {
+        if (father == "Darth Vader") {
+            throw std::string{"NO!!! NO!!!"};
+        }
+    }
+
+    /* ... */
+
+    try {
+        luke.search_your_feelings(lord_vader);
+    } catch (std::string const& error) {
+        std::cerr << ("operation failed: " + error + '\n');
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\section{Data types}
+
+\begin{frame}
+    \frametitle{fundamentalne typy danych}
+    \framesubtitle{Data structures}
+
+    \begin{labeling}{{\tt double}}
+        \item[{\tt void}] typ reprezentujący ``nic''
+        \item[{\tt bool}] typ reprezentujący wartości logiczne
+        \item[{\tt char}] typ reprezentujący znaki
+        \item[{\tt int}] typ reprezentujący liczby całkowite
+        \item[{\tt double}] typ reprezentujący liczby zmiennoprzecinkowe
+    \end{labeling}
+
+    \vspace{1em}
+
+    \url{https://en.cppreference.com/w/cpp/language/types}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{{\tt void}}
+    \framesubtitle{fundamentalne typy danych}
+
+    Typ {\tt void} jest często używany jeśli funkcja nie produkuje żadnej
+    wartości\footnote{takie funkcje nazywane są czasem ``procedurami'', ang.
+    \emph{procedure}}:
+
+    \begin{lstlisting}
+    auto produce_nothing() -> void
+    {}
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{{\tt bool}}
+    \framesubtitle{fundamentalne typy danych}
+
+    Typ {\tt bool} jest zwracany przez operatory porównania (slajd
+    \pageref{selection_comparison_ops}). Jest również typem ``argumentu''
+    instrukcji {\tt if}.
+    Przyjmuje jedynie dwie wartości -- reprezentowane słowami kluczowymi {\tt
+    true} i {\tt false}:
+
+    \begin{lstlisting}
+    auto you_know_it_to_be = true;
+    auto lies_and_deception = false;
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{{\tt char}}
+    \framesubtitle{fundamentalne typy danych}
+
+    Typ {\tt char} jest używany do reprezentowania znaków. Wywodzi się z czasów
+    kiedy królowało kodowanie ASCII, a znaki (oraz kody kontrolne) zajmowały
+    sztywne 7 bitów.
+
+    \begin{lstlisting}
+    auto a = 'A';
+    auto new_line = '\n';
+    \end{lstlisting}
+
+    Domyślnie typ {\tt char} reprezentuje wartości ``ze znakiem'' czyli de~facto
+    {\tt signed~char}; możliwe jest wymuszenie ``bezznakowości'' pisząc {\tt
+    unsigned~char}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{{\tt int}}
+    \framesubtitle{fundamentalne typy danych}
+
+    Typ {\tt int} jest używany do reprezentowania liczb całkowitych, domyślnie
+    ze znakiem:
+
+    \begin{lstlisting}
+    auto answer_to_everything  = 42;
+    auto negative_of_the_beast = -666;
+    \end{lstlisting}
+
+    Typ {\tt int} można ``doprecyzować'' specyfikatowami znaku i rozmiaru:
+
+    \begin{labeling}{{\tt unsigned}}
+        \item[{\tt signed}] liczba całkowita ze znakiem (domyślnie)
+        \item[{\tt unsigned}] liczba całkowita bez znaku
+        \item[{\tt short}] ``krótka'' liczba, czyli zazwyczaj 16 bitów
+        \item[{\tt long}] ``długa'' liczba, czyli zazwyczaj 64 bity
+    \end{labeling}
+
+    Specyfikatory można łączyć, np. w tym {\tt unsigned long int}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{{\tt double}}
+    \framesubtitle{fundamentalne typy danych}
+
+    Typ {\tt double} jest używany do reprezentowania liczb zmiennoprzecinkowych.
+    Jego mniej precyzyjną alternatywą jest typ {\tt float}.
+
+    \begin{lstlisting}
+    auto pi     = 3.14f;   // float
+    auto piiiii = 3.14159; // double
+    \end{lstlisting}
+
+    Domyślnym typem literałów zmiennoprzecinkowych jest {\tt double}.
+\end{frame}
+
+\begin{frame}
+    \frametitle{złożone typy danych}
+    \framesubtitle{Data structures}
+
+    Złożone (ang. \emph{compound}) typy danych składają się z typu
+    podstawowego i ``dodatku'':
+
+    \begin{labeling}{{\tt T const}}
+    \item[{\tt T[\emph{n}]}] tablica {\tt \emph{n}} wartości typu {\tt T}
+    \item[{\tt T*}] wskaźnik do obszaru pamięci zawierającego wartość
+        typu {\tt T}
+    \item[{\tt T\&}] referencja do wartości typu {\tt T}
+    \item[{\tt T const}] stała wartość typu {\tt T}
+    \end{labeling}
+
+    \vspace{1em}
+
+    \url{https://en.cppreference.com/w/cpp/language/type}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{tablica}
+    \framesubtitle{złożone typy danych}
+
+    Tablice, odziedziczone z języka C, służą do przechowywania kilku wartości
+    tego samego typu:
+    {\footnotesize \begin{lstlisting}
+    int decimal_digits[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    \end{lstlisting}}
+
+    Tablica może mieć również rozmiar nieokreślony -- widać to np. w funkcji
+    {\tt main()}:
+
+    {\footnotesize \begin{lstlisting}
+    auto main(int argc, char* argv[]) -> int
+    {
+        return 0;
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{wskaźnik i referencja}
+    \framesubtitle{złożone typy danych}
+
+    Wskaźniki, odziedziczone z języka C, służą do przechowywania adresów
+    obszarów pamięci zawierających wartości typu {\tt T}:
+    {\footnotesize \begin{lstlisting}
+    auto a_value   = 42; $// or, explicitly: int a_value ...$
+    auto a_pointer = &a; $// or, explicitly: int* a_pointer ...$
+    \end{lstlisting}}
+
+    Referencje służą do przechowywania odniesień do wartości typu {\tt T}:
+    {\footnotesize \begin{lstlisting}
+    auto  a_value = 42; $// or, explicitly: int a_value ...$
+    auto& a_ref   = a;  $// or, explicitly: int& a_pointer ...$
+    \end{lstlisting}}
+
+    Wskaźniki mogą być ``zerowe'' tzw. \emph{null pointer} i nie wskazywać na
+    poprawny adres. Referencje \emph{zawsze} wskazują na istniejącą
+    wartość\footnote{przynajmniej w teorii...}.
+\end{frame}
+
+\subsection{Data structures}
+
+\begin{frame}
+    \frametitle{biblioteka standardowa}
+    \framesubtitle{Data structures}
+
+    Biblioteka standardowa (ang. \emph{standard library}) języka C++ zawiera
+    wiele struktur danych takich jak:
+
+    \begin{labeling}{{\tt std::vector}}
+    \item[{\tt std::array}] ``silna'' tablica
+    \item[{\tt std::vector}] tablica o zmiennej długości
+    \item[{\tt std::queue}] kolejka FIFO
+    \item[{\tt std::map}] struktura mapująca klucze typu $T$ na wartości typu $V$
+    \item[{\tt std::string}] napis
+    \item[{\tt std::pair}] para wartości typów $F$ i $S$
+    \end{labeling}
+
+    \vspace{1em}
+
+    Warto używać struktur z biblioteki standardowej żeby oszczędzić sobie pracy.
+\end{frame}
+
+\begin{frame}
+    \frametitle{własne typy danych}
+    \framesubtitle{Data structures}
+
+    Programista C++ może definiować również własne typy danych: struktury i
+    klasy, oraz wyliczenia.
+
+    \vspace{1em}
+
+    Klasy ({\tt class}) różnią się od struktur ({\tt struct}) tylko i wyłącznie
+    tym, że ich pola są domyślnie publiczne.
+
+    \vspace{1em}
+
+    Wyliczenia słabe ({\tt enum}) są typu {\tt int}, ich wartości są globalne, i
+    mają automatycznie zdefiniowane operacje arytmetyczne (np. sumę bitową). Są
+    przydatne przy definiowaniu flag, które można łączyć.
+
+    Wyliczenia silne ({\tt enum class}) różnią sie od słabych tym, że są
+    ''swojego własnego'' typu, ich wartości nie są globalne, oraz nie mają
+    automatycznie zdefiniowanych operacji arytmetycznych. Są przydatne przy
+    definiowaniu rozdzielnych stanów.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{struktury ({\tt struct})}
+    \framesubtitle{Data structures}
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct being_with_legs {
+        std::string const name;
+        size_t const legs;
+
+        being_with_legs(std::string, size_t);
+    };
+
+    being_with_legs::being_with_legs(std::string n, size_t l)
+        : name{std::move(n)}
+        , legs{l}
+    {}
+
+    /* ... */
+
+    auto const snake = being_with_legs{ "snake", 0 };
+    auto const human = being_with_legs{ "human", 2 };
+    auto const spider = being_with_legs{ "spider", 8 };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{wyliczenia ``silne'' ({\tt enum class})}
+    \framesubtitle{Data structures}
+
+    {\scriptsize
+    \begin{lstlisting}
+    enum class meal_kind {
+        BREAKFAST,
+        DINNER,
+        SUPPER,
+    };
+
+    auto is_most_important_meal_of_the_day(meal_kind const meal) -> bool
+    {
+        return (meal == meal_kind::BREAKFAST);
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{wyliczenia ({\tt enum})}
+    \framesubtitle{Data structures}
+
+    {\scriptsize
+    \begin{lstlisting}
+    enum some_flags_type {
+        SOME_FLAG_READ,
+        SOME_FLAG_WRITE,
+        SOME_FLAG_NONBLOCK,
+        SOME_FLAG_BUFFERED,
+        SOME_FLAG_UNBUFFERED,
+    };
+    constexpr auto SOME_FLAG_DEFAULT = SOME_FLAG_READ
+                                     | SOME_FLAG_WRITE
+                                     | SOME_FLAG_BUFFERED;
+
+    // We want read-only, non-blocking, unbuffered descriptor.
+    auto const mode = SOME_FLAG_READ
+                    | SOME_FLAG_NONBLOCK
+                    | SOME_FLAG_UNBUFFERED;
+    \end{lstlisting}}
+\end{frame}
+
+\section{I/O}
+
+\begin{frame}
+    \frametitle{I/O}
+
+    C++ korzysta z mechanizmów I/O dostarczanych przez API systemu operacyjnego
+    (np. Linux), ale część z nich opakowuje w swoje własne abstrakcje
+    zapewniając programom przenośność.
+\end{frame}
+
+\begin{frame}
+    \frametitle{standard steams}
+    \framesubtitle{I/O}
+
+    W momencie uruchomienia dla większości programów tworzone są 3 standardowe
+    strumienie: wejścia, wyjścia, i błędów.
+
+    \begin{labeling}{{\tt std::cerr}}
+    \item[{\tt std::cin}] standardowy strumień wejścia, służy do odczytu danych
+        podawanych przez użytkownika w konsoli tekstowej (\emph{file descriptor
+        0})
+    \item[{\tt std::cout}] standardowy strumień wyjścia, służy do prezentacji
+        wyników działania programu w konsoli tekstowej (\emph{file descriptor
+        1})
+    \item[{\tt std::cerr}] standardowy strumień błędów, służy do prezentacji
+        błędów działania i awarii programu w konsoli tekstowej (\emph{file
+        descriptor 2})
+    \end{labeling}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{standard steams}
+    \framesubtitle{I/O}
+
+    {\scriptsize
+    \begin{lstlisting}
+    {
+        std::string line;
+
+        // read a line of text from standard input
+        std::getline(std::cin, line);
+    }
+
+    // display a message to inform user of what is happening...
+    std::cerr << "connecting to server...\n";
+
+    // ...or notify them about errors
+    std::cerr << "connection failed\n";
+
+    // display results of program's work
+    std::cout << downloaded_data << '\n';
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{files}
+    \framesubtitle{I/O}
+
+    C++ definiuje typy {\tt std::ifstream} (\emph{input file stream}) i
+    {\tt std::ofstream} (\emph{output file stream}) w bibliotece standardowej.
+
+    \vspace{1em}
+
+    Jeśli ich interfejs nie jest wystarczający zawsze można użyć interfejsu
+    platformy czyli np. wywołań systemowych definiowanych przez standard POSIX --
+    {\tt open(3)}, {\tt write(3)}, {\tt read(3)}, i {\tt close(3)}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{files ({\tt std::ifstream} and {\tt std::ofstream})}
+    \framesubtitle{I/O}
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto path = std::string{"./data.txt"};
+
+    {
+        // write line to a file
+        auto out = std::ofstream{ path };
+        if (out.good()) {
+            out << "Hello, World!\n";
+        }
+    }
+
+    {
+        // read line from a file
+        auto in = std::ifstream{ path };
+        if (in.good()) {
+            auto line = std::string{};
+            std::getline(in, line);
+            std::cout << line << "\n";
+        }
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\end{document}
+
+% \begin{frame}
+%     \frametitle{sieć}
+%     \framesubtitle{I/O}
+
+%     Komunikacja po sieci odbywa się z wykorzystaniem mechanizmów I/O
+%     dostarczanych przez standard POSIX --
+%     {\tt socket(2)},
+%     {\tt bind(2)},
+%     {\tt listen(2)},
+%     {\tt accept(2)},
+%     {\tt connect(2)},
+%     {\tt inet\_pton(3)},
+%     {\tt connect(3)},
+%     {\tt shutdown(3)},
+%     {\tt close(3)}.
+% \end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{sieć (nagłówki)}
+%     \framesubtitle{I/O}
+
+%     Pliki nagłówkowe, które należy dodać na początku pliku z kodem źródłowym
+%     żeby móc bez przeszkód korzystać z funkcji pozwalających na komunikację po
+%     sieci:
+
+%     {\small
+%     \begin{lstlisting}
+%     #include <arpa/inet.h>
+%     #include <endian.h>
+%     #include <netinet/ip.h>
+%     #include <string.h>
+%     #include <sys/types.h>
+%     #include <sys/socket.h>
+%     #include <sys/un.h>
+%     #include <unistd.h>
+%     \end{lstlisting}}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{sieć (klient)}
+%     \framesubtitle{I/O}
+
+%     {\scriptsize
+%     \begin{lstlisting}
+%     auto sock = socket(AF_INET, SOCK_STREAM, 0);
+
+%     auto const ip = std::string{"127.0.0.1"};
+%     auto const port = uint16_t{42420};
+
+%     sockaddr_in server;
+%     memset(&server, 0, sizeof(server));
+%     server.sin_family = AF_INET;
+%     server.sin_port = htobe16(port);
+%     inet_pton(AF_INET, ip.c_str(), reinterpret_cast<void*>(&server.sin_addr));
+
+%     connect(sock, reinterpret_cast<sockaddr*>(&server), sizeof(server));
+
+%     auto const data = std::string{"Hello, World!"};
+%     write(sock, data.c_str(), data.size());
+
+%     shutdown(sock, SHUT_RDWR);
+%     close(sock);
+%     \end{lstlisting}}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{sieć (serwer, część $\frac{1}{2}$)}
+%     \framesubtitle{I/O}
+
+%     {\tiny
+%     \begin{lstlisting}
+%     auto sock = socket(AF_INET, SOCK_STREAM, 0);
+
+%     auto const ip = std::string{"127.0.0.1"};
+%     auto const port = uint16_t{42420};
+
+%     sockaddr_in server;
+%     memset(&server, 0, sizeof(server));
+
+%     server.sin_family = AF_INET;
+%     server.sin_port = htobe16(port);
+
+%     inet_pton(AF_INET, ip.c_str(), reinterpret_cast<void*>(&server.sin_addr));
+
+%     bind(sock, reinterpret_cast<sockaddr*>(&server), sizeof(server));
+%     listen(sock, 0);  // default limit of waiting connections
+%     \end{lstlisting}}
+
+%     W ten sposób przygotuje się socket do odbierania połączeń.
+% \end{frame}
+
+% \begin{frame}[fragile]
+%     \frametitle{sieć (serwer, część $\frac{2}{2}$)}
+%     \framesubtitle{I/O}
+
+%     {\tiny
+%     \begin{lstlisting}
+%     sockaddr_in client_addr;
+%     memset(&client_addr, 0, sizeof(client_addr));
+%     auto client_len = socklen_t{sizeof(client_addr)};
+%     auto client = accept(sock,
+%         reinterpret_cast<sockaddr*>(&client_addr), &client_len);
+%     {
+%         // report client's address
+%         std::array<char, INET_ADDRSTRLEN + 1> buffer {};
+%         inet_ntop(AF_INET, &client_addr.sin_addr, buffer.data(), buffer.size());
+%         std::cout << buffer.data() << ':' << be16toh(client_addr.sin_port) << "\n";
+%     }
+%     {
+%         // read data from client
+%         std::array<char, 512> buffer {};
+%         auto const n = read(client, buffer.data(), buffer.size());
+%         std::cout << std::string{buffer.data(), buffer.data() + n} << "\n";
+%     }
+
+%     shutdown(sock, SHUT_RDWR);
+%     close(sock);
+%     \end{lstlisting}}
+
+%     W ten sposób odbiera się połączenia i rejestruje adres połączonego klienta.
+% \end{frame}

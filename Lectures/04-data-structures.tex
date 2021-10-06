@@ -1,0 +1,799 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{epigraph}
+
+\renewcommand{\epigraphsize}{\scriptsize}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{000000}
+\setbeamercolor{lower separation line head}{bg=xbarcolor}
+\setbeamercolor{lower separation line foot}{bg=xbarcolor}
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{Struktury danych}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={[*}{*]},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{red}]{@}{@},
+moredelim=**[is][\color{gray}]{`}{`},
+moredelim=**[is][\color{olive}]{$}{$}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{Struktury danych}
+
+\begin{frame}
+    \frametitle{Po co?}
+    \framesubtitle{Struktury danych}
+
+    Struktury (typy) danych wykorzystuje się jeśli zachodzi potrzeba zgrupowania
+    pewnych danych mających \emph{wspólny raison
+    d'être\footnote{\url{https://en.wiktionary.org/wiki/raison_d'être}}};
+    reprezentujących zestaw \emph{danych} i \emph{operacji} na tych danych,
+    których przechowywanie osobno nie miałoby większego sensu.
+
+    \vspace{1em}
+
+    Biblioteka standardowa zawiera strukturę danych {\tt std::vector}, która
+    reprezentuje tablicę o zmiennej długości. Grupuje ona \emph{dane} (zawartość
+    i rozmiar), oraz \emph{operacje} (np. dodawanie, usuwanie i dostęp do
+    elementów).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Składniki}
+    \framesubtitle{Struktury danych}
+
+    Struktury (typy) danych składają się przede wszystkim z \textbf{pól} (ang.
+    \emph{fields} lub \emph{member variables}), czasem zwanych zmiennymi lub
+    stałymi składowymi, i \textbf{funkcji składowych} (ang. \emph{member
+    functions}).
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Cat {
+        size_t number_of_lives { 1 };     $// member variable (field)$
+        bool const brings_luck { false }; $// member constant (field)$
+
+        auto make_sound() const -> void;  $// member function$
+    };
+
+    auto Cat::make_sound() const -> void
+    {
+        std::cout << "Meow! I have "
+            << number_of_lives << " lives left.\n";
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Pola}
+    \framesubtitle{Struktury danych}
+
+    Pola służą do przechowywania \emph{danych}, które dany typ grupuje. Na
+    przykład rozmiar i zawartość wektora.
+
+    Pola mogą być zmienne - jeśli ich wartości mogą podlegać modyfikacji w
+    trakcie życia obiektu danego typu (np. rozmiar {\tt std::vector}), albo
+    stałe - jeśli nie podlegają modyfikacji (np. rozmiar {\tt std::array}).
+
+    \vspace{1em}
+
+    Definiując pole trzeba użyć starego stylu deklaracji, czyli poprzedzić nazwę
+    typem, a nie słowem kluczowym {\tt auto}:
+
+    {\scriptsize
+    \begin{lstlisting}
+    size_t number_of_lives { 1 };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Funkcje składowe}
+    \framesubtitle{Struktury danych}
+
+    Funkcje składowe służą do wykonywania \emph{operacji} na danych zgrupowanych
+    przez dany typ (np. {\tt std::vector::push\_back}), lub do ogólnej
+    interakcji z nim (np. {\tt Cat::make\_sound}).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{{\tt class} vs {\tt struct}}
+    \framesubtitle{Struktury danych}
+
+    Jedyna różnica to domyślna \emph{widoczność} pól i funkcji składowych. Pola
+    klas ({\tt class}) są prywatne, a struktur ({\tt struct}) publiczne.
+    Widoczność można zmieniać słowami kluczowymi {\tt private} i {\tt public}.
+
+    {\scriptsize
+    \begin{lstlisting}
+    class Foo {
+        @public@:
+        bool now_you_see_me { true };
+
+        @private@:
+        bool now_you_dont { false };
+    };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Widoczność pól}
+    \framesubtitle{Struktury danych}
+
+    Po co jest widoczność? Niektóre pola w strukturze mogą nie być przeznaczone
+    dla ''użytkowników'' lub wymagać zachowania pewnych warunków. Jeśli jest
+    taka potrzeba zawsze można udzielić dostępu do pola przez funkcje składowe.
+
+    {\tiny
+    \begin{lstlisting}
+    class Hour {
+        unsigned value { 0 };  $// private by default$
+        public:
+        auto what_time_is_it() const -> unsigned;
+        auto increase_time() -> void;
+    };
+    auto Hour::what_time_is_it() const -> unsigned
+    {
+        reurn value;
+    }
+    auto Hour::increase_time() -> void
+    {
+        ++value;
+        if (value > 23) {  $// make sure the hour wraps after 23$
+            value = 0;
+        }
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Konstruktor}
+    \framesubtitle{Struktury danych}
+
+    Konstruktor (ang. \textit{constructor}) jest specjalną funkcją składową
+    odpowiedzialną za ''przygotowanie'' struktury danych do użycia. Konstruktor
+    może zasygnalizować niemożność utworzenia instancji struktury (np. z powodu
+    niewłaściwych wartości argumentów) używając wyjątków\footnote{ponieważ
+    konstruktor jako takie nie zwraca wartości więc nie ma jak inaczej
+    zasygnalizować błędu}.
+
+    {\tiny
+    \begin{lstlisting}
+    class Hour {
+        $// code from last slide here...$
+        public:
+        Hour(unsigned);
+    };
+    Hour::Hour(unsigned @v@)
+        : value{v} $// initialise the field using values from parameters$
+    {
+        @if@ (@v > 23@) { $// throw if they don't make sense$
+            @throw@ std::out_of_range{"hour value cannot exceed 23"};
+        }
+    }
+    \end{lstlisting}}
+\end{frame}
+
+% FIXME use this when talking about resources, I/O, and threads
+% \subsection{RAII}
+
+% \begin{frame}
+%     \frametitle{RAII - Resource Acquisition Is Initialisation}
+%     \framesubtitle{Struktury danych}
+
+%     (ang. \textit{destructor})
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Destruktor}
+%     \framesubtitle{Struktury danych}
+
+%     (ang. \textit{destructor})
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Kopiowanie}
+%     \framesubtitle{Struktury danych}
+
+%     (ang. \textit{destructor})
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Przenoszenie}
+%     \framesubtitle{Struktury danych}
+
+%     (ang. \textit{destructor})
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Rule of five}
+%     \framesubtitle{Struktury danych}
+
+%     (ang. \textit{destructor})
+% \end{frame}
+
+% \begin{frame}
+%     \frametitle{Rule of zero}
+%     \framesubtitle{Struktury danych}
+
+%     (ang. \textit{destructor})
+% \end{frame}
+
+\section{Pola}
+
+\begin{frame}[fragile]
+    \frametitle{Zmienne}
+    \framesubtitle{Pola}
+
+    Definicja zmiennego pola wygląda tak jak definicja każdej innej zmiennej.
+    Załóżmy, że chcemy stworzyć strukturę opisującą kota. Jak wiadomo, koty mają
+    9 żyć do wykorzystania:
+
+    {\small
+    \begin{lstlisting}
+    struct Cat {
+        constexpr static unsigned MAX_LIVES = 9;
+        unsigned lives_left { MAX_LIVES };
+    };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Inicjalizacja zmiennych składowych}
+    \framesubtitle{Pola}
+
+    Zmienne składowe można zainicjalizować na kilka sposobów:
+    \begin{enumerate}
+        \item przypisując im wartość w liście inicjalizującej składowe (ang.
+            \emph{member initialiser list})
+        \item przypisując im wartość w ciele konstruktora
+        \item pozostawiając ich wartości domyślne zdefiniowane w ciele struktury
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Inicjalizacja zmiennych składowych (c.d.)}
+    \framesubtitle{Pola}
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Cat {
+        constexpr static unsigned MAX_LIVES = 9;
+        unsigned lives_left { MAX_LIVES }; $// default value provided$
+
+        Cat() = default; $// default ctor$
+        Cat(unsigned const);
+    };
+    Cat::Cat(unsigned const ll)
+        : lives_left{ll} $// use member initialiser list$
+    {}
+    \end{lstlisting}}
+
+    Jeśli definiujemy konstruktor to kompilator nie wygeneruje konstruktora
+    domyślnego (z pustą listą parametrów). Jeśli chcemy w takiej sytuacji
+    skorzystać z domyślnego konstruktora to możemy albo zdefiniować go
+    samodzielnie, albo użyć konstrukcji {\tt = default}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Dostęp}
+    \framesubtitle{Pola}
+
+    Aby dostać się do pola struktury należy użyć operatora `{\tt .}' (kropki):
+
+    {\small
+    \begin{lstlisting}
+    auto a_cat = Cat{}; $// an ordinary cat$
+
+    std::cout << a_cat@.@lives_left << "\n";
+    \end{lstlisting}}
+
+    Jeśli pole jest zmienne, można je zmodyfikować:
+
+    {\small
+    \begin{lstlisting}
+    a_cat@.@lives_left @-=@ 1; $// the cat died$
+    \end{lstlisting}}
+
+    lub przypisać mu całkiem nową wartość:
+
+    {\small
+    \begin{lstlisting}
+    a_cat@.@lives_left @=@ 666; $// cat from hell$
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Stałe}
+    \framesubtitle{Pola stałe (stałe składowe)}
+
+    Definicja stałego pola wygląda tak jak definicja każdej innej stałej.
+    Kontynuując przykład z kotem:
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Cat {
+        constexpr static unsigned MAX_LIVES = 9;
+        unsigned lives_left { MAX_LIVES };
+
+        std::string @const@ name;
+
+        Cat() = default;
+        Cat(unsigned const);
+    };
+    \end{lstlisting}}
+
+    Wartości pół stałych nie można\footnote{Oh,
+    rly?\label{hackerman_const_field_mutation}} zmienić, nawet w ciele
+    konstruktora. Do ich inicjalizacji służy specjalna notacja.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Inicjalizacja stałych składowych}
+    \framesubtitle{Pola stałe (stałe składowe)}
+
+    Żeby mieć możliwość inicjalizacji stałego pola różnymi wartościami w różnych
+    instancjach struktury potrzebny jest konstruktor przyjmujący jako parametr
+    wartość, którą stałe powinno być zainicjalizowane:
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Cat {
+        constexpr static unsigned MAX_LIVES = 9;
+        unsigned lives_left { MAX_LIVES };
+
+        @std::string const name@;
+
+        Cat() = default;
+        Cat(unsigned const, @std::string@);
+    };
+    Cat::Cat(unsigned const ll, @std::string n@)
+        : lives_left{ll}
+        , @name{std::move(n)}@
+    {}
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Dostęp}
+    \framesubtitle{Pola stałe (stałe składowe)}
+
+    Do stałych pól struktury można się dostać za pomocą operatora `{\tt .}'
+    (kropki):
+
+    {\small
+    \begin{lstlisting}
+    auto mr_snuggles = Cat{ 9, "Mr. Snuggles" };
+
+    std::cout << mr_snuggles.name << "\n";
+    \end{lstlisting}}
+
+    Możliwy jest jednak dostęp wyłącznie do odczytu, a kompilator zapobiegnie
+    ich przypadkowej modyfikacji:
+
+    {\small
+    \begin{lstlisting}
+    mr_snuggles.name = "Evil Elvis"; @error!@
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Dostęp - modyfikacja stałych składowych?!}
+    \framesubtitle{Pola stałe (stałe składowe)}
+
+    \begin{figure}[!htp]
+        \centering
+        \includegraphics[width=9cm]{hackerman}
+        \caption{Hackerman\footnote{Kung Fury (2015), \url{https://www.imdb.com/title/tt3472226/}}}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Dostęp - modyfikacja stałych składowych?!}
+    \framesubtitle{Pola stałe (stałe składowe)}
+
+    Jeśli chce się zaimponować cioci w odwiedzinach, albo babci na święta to
+    można pokazać im jak \textsc{oszukać kompilator} i zmodyfikować
+    \textsc{stałe składowe}!
+
+    {\scriptsize
+    \begin{lstlisting}
+    `std::cout << mr_snuggles.name << "\n";`
+
+    auto wait_its_illegal = &mr_snuggles.name; $// pointer to member$
+    @*const_cast<std::string*>(wait_its_illegal)@ = "Evil Elvis";
+
+    `std::cout << mr_snuggles.name << "\n";`
+    \end{lstlisting}}
+
+    {\tiny Przy okazji widać też jak można pobrać \emph{wskaźnik do składowej}
+    (ang. \emph{pointer to member}). Nie jest to coś co często się przydaje, ale
+    na pewno częściej niż modyfikacja stałych składowych.}
+\end{frame}
+
+\section{Funkcje}
+
+\begin{frame}
+    \frametitle{Definiowanie funkcji składowych}
+    \framesubtitle{Funkcje składowe}
+
+    Funkcję należy zadeklarować wewnątrz struktury, a następnie zdefiniować poza
+    strukturą.
+
+    \vspace{1em}
+
+    Definicje struktur (ich nazwy, pola, funkcje składowe) znajdują się
+    zazwyczaj w plikach nagłówkowych, np. {\tt Cat.h} (wyjątek to statyczne
+    zmienne składowe, które trzeba dodatkowo zadeklarować w pliku z
+    implementacją).\newline
+    Definicje funkcji składowych znajdują się zazwyczaj w plikach z ich
+    implementacją, np. {\tt Cat.cpp} (wyjątek to np. funkcje {\tt inline} albo
+    szablony).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definiowanie funkcji składowych (c.d.)}
+    \framesubtitle{Funkcje składowe}
+
+    Deklaracja funkcji wewnątrz definicji struktury, definicja funkcji poza:
+
+    {\scriptsize
+    \begin{lstlisting}
+    $// Cat.h$
+    struct Cat {
+        auto make_sound() const -> void;
+    };
+
+    $// Cat.cpp$
+    auto Cat::make_sound() const -> void
+    {
+        std::cout << ("Meow! (" + name + ")\n");
+    }
+    \end{lstlisting}}
+
+    Wewnątrz definicji funkcji można używać jej pól (stała składowa {\tt name}
+    na przykładzie).
+\end{frame}
+
+\section{Zadania}
+
+\begin{frame}
+    \frametitle{Zadanie: student}
+    \label{lecture_exercise_0}
+
+    Zaimplementować strukturę danych opisującą studenta. Struktura powinna
+    składać się z:
+    \begin{enumerate}
+        \item pól (imię, nazwisko, numer indeksu, aktualny semest,
+            średnia ocen)
+        \item funkcji składowej `{\tt to\_string() const}' zwracającej {\tt
+            std::string}, którym opisuje studenta
+        \item konstruktora
+    \end{enumerate}
+
+    Niech w funkcji main będzie utworzony obiekt reprezentujący was, a na
+    \texttt{std::cout} wydrukowany będzie wynik działania funkcji
+    \texttt{Student::to\_string} na tym obiekcie.
+
+    \vspace{1em}
+
+    {\footnotesize
+    Kod źródłowy w plikach {\tt include/s1234/Student.h} (nagłówek) i
+    {\tt src/s03-Student.cpp} (implementacja i funkcja {\tt main}).}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: czas}
+    \label{lecture_exercise_1}
+
+    Zaimplementować strukturę danych opisującą czas. Struktura powinna składać
+    się z:
+    \begin{enumerate}
+        \item pól (godzina, minuta, sekunda)
+        \item funkcji składowych:
+            \begin{enumerate}
+                \item `{\tt to\_string() const}' zwracającej {\tt
+                    std::string} pokazującej czas w formacie {\tt HH:MM:SS}
+                \item {\tt next\_hour()}, {\tt next\_minute()}, i {\tt
+                    next\_second()} (wszystkie zwracające {\tt void})
+                    zwiększających czas
+            \end{enumerate}
+        \item konstruktora
+    \end{enumerate}
+
+    Niech w funkcji \texttt{main} pojawi się kod pozwalający na zweryfikowanie
+    działania waszej struktury danych dla godziny 23:59:59 (np. niech drukuje
+    godzinę, zwiększy mintę, wydrukuje znowu, itd.).
+
+    \vspace{1em}
+
+    {\footnotesize
+    Kod źródłowy w plikach {\tt include/s1234/Time.h} (nagłówek) i
+    {\tt src/s03-Time.cpp} (implementacja i funkcja {\tt main}).}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: pora dnia}
+    \label{lecture_exercise_2}
+
+    Do struktury opisującej czas dodać funkcję składową
+    `{\tt time\_of\_day() const}' zwracającą porę dnia (rano, dzień, wieczór,
+    noc). Pora dnia powinna być opisana typem wyliczeniowym {\tt enum class
+    Time\_of\_day}.
+
+    Napisać funkcję \texttt{to\_string(Time\_of\_day)} zwracającą
+    \texttt{std::string}, która zamieni wartość wyliczeniową na napis.
+
+    W funkcji main dodać kod pozwalający na zweryfikowanie działania dodanych
+    funkcji.
+
+    \vspace{1em}
+
+    {\footnotesize
+    Kod źródłowy w plikach {\tt include/s1234/Time.h} (nagłówek) i
+    {\tt src/s03-Time.cpp} (implementacja i funkcja {\tt main}).}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: arytmetyka}
+    \label{lecture_exercise_3}
+
+    Do struktury opisującej czas dodać funkcje składowe:
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto operator+ (Time const&) const -> Time;
+    auto operator- (Time const&) const -> Time;
+    auto operator< (Time const&) const -> bool;
+    auto operator> (Time const&) const -> bool;
+    auto operator== (Time const&) const -> bool;
+    auto operator!= (Time const&) const -> bool;
+    \end{lstlisting}}
+
+    Umożliwią one arytmetykę (dodawanie, odejmowanie, porównywanie, itd.) na czasie.
+
+    Do funkcji \texttt{main} dodać kod, który pozwoli na zweryfikowanie
+    działania.
+
+    \vspace{1em}
+
+    {\footnotesize
+    Kod źródłowy w plikach {\tt include/s1234/Time.h} (nagłówek) i
+    {\tt src/s03-Time.cpp} (implementacja i funkcja {\tt main}).}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: sekundy do północy}
+    \label{lecture_exercise_4}
+
+    Do struktury opisującej czas dodać funkcje składowe:
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto count_seconds() const -> uint64_t;
+    auto count_minutes() const -> uint64_t;
+    auto time_to_midnight() const -> Time;
+    \end{lstlisting}}
+
+    Funkcje \texttt{count\_seconds()} i \texttt{count\_minutes()} liczą sekundy
+    \emph{od} godziny 00:00:00.\\
+    Funkcja \texttt{time\_to\_midnight()} zwraca czas pozostały \emph{do} północy.
+
+    Do funkcji \texttt{main} dodać kod, który pozwoli na zweryfikowanie
+    działania.
+
+    \vspace{1em}
+
+    {\footnotesize
+    Kod źródłowy w plikach {\tt include/s1234/Time.h} (nagłówek) i
+    {\tt src/s03-Time.cpp} (implementacja i funkcja {\tt main}).}
+\end{frame}
+
+%% zewnętrzne
+%% składowe
+
+\section{OOP}
+
+\begin{frame}
+    \frametitle{OOP}
+
+    OOP -- programowanie zorientowane obiektowo (ang. \emph{object-oriented
+    programming}).
+
+    \vspace{1em}
+
+    Na początku lat 70. XX wieku powstał język
+    Smalltalk\footnote{\url{https://en.wikipedia.org/wiki/Smalltalk}}. Jego
+    głównym zamysłem była swobodna \emph{wymiana wiadomości} między
+    \emph{obiektami} (dlatego ''zorientowane obiektowo'') współistniejącymi w
+    systemie.
+
+    W późnych latach 80. XX wieku powstał język
+    Erlang\footnote{\url{https://en.wikipedia.org/wiki/Erlang_(programming_language)}},
+    którego jednym z głównych mechanizmów była \emph{asynchroniczna} wymiana
+    wiadomości.
+\end{frame}
+
+\begin{frame}
+    \frametitle{OOP (c.d.)}
+
+    Na początku lat 60. XX wieku został opracowany język
+    Simula\footnote{\url{https://en.wikipedia.org/wiki/Simula}}, który z językiem
+    Smalltalk nie miał zbyt wiele wspólnego, ale za to posiadał klasy i
+    dziedziczenie.
+
+    \vspace{1em}
+
+    W 1985 powstał język C++\footnote{\url{https://en.wikipedia.org/wiki/C++}},
+    który zmiksował składnię i funkcjonalność języka C z mechanizmami języka
+    Simula (klasy i dziedziczenie).
+\end{frame}
+
+\begin{frame}
+    \frametitle{OOP (c.d.)}
+
+    W 1995 powstał język
+    Java\footnote{\url{https://en.wikipedia.org/wiki/Java_(programming_language)}},
+    który wzorował się na Simuli i C++ - też miał klasy i dziedziczenie.
+    W Java wszystkie klasy mają wspólną klasę bazową - nazwaną, pechowo, {\tt
+    Object}. Nie jest to jedyna pechowa decyzja w tym języku...
+
+    \vspace{1em}
+
+    Dział marketingu Oracle uznał, że to oznacza, że język jest zorientowany
+    obiektowo i od tamtego momentu OOP zmieniło się nie do poznania\footnote{na
+    zajęciach OOP będzie oznaczać tą drugą, zdegenerowaną formę, a nie
+    oryginalną ideę}.\\Zamiast oznaczać swobodną, asynchroniczną wymianę
+    wiadomości zaczęło oznaczać programowanie oparte na klasach i wzorce
+    projektowe usiłujące zamaskować biedę semantyczną języka Java.
+\end{frame}
+
+\subsection{...w C++}
+
+\begin{frame}
+    \frametitle{Dziedziczenie -- po co?}
+    \framesubtitle{OOP}
+
+    Dziedziczenie (ang. \emph{inheritance}) polega na zbudowaniu jednego typu
+    (\emph{pochodnego}; ang.  \emph{derived type}), w oparciu o drugi typ
+    (\emph{bazowy}; ang. \emph{base type}). Mówimy, że typ pochodny
+    \emph{dziedziczy po} typie bazowym.
+
+    \vspace{1em}
+
+    Typ pochodny posiada ''z automatu'' wszystkie pola i funkcje składowe typu
+    bazowego, ale dostęp ma tylko publicznych\footnote{Tak naprawdę ma jeszcze
+    dostęp do pól chronionych (słowo kluczowe {\tt protected}), ale pola
+    chronione to coś czego nie polecam używać. Dziedziczenie implementacji jest
+    brudnym mechanizmem nawet bez dodatkowych komplikacji.}, czyli typ pochodzny
+    \emph{dziedziczy implementację}\footnote{To czy odziedziczone pola są
+    widoczne ''na zewnątrz'' typu pochodnego zależy od tego czy dziedziczył
+    prywatnie (wtedy nie są) czy publicznie (wtedy są).} typu bazowego.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Polimorfizm -- po co?}
+    \framesubtitle{OOP}
+
+    Polimorfizm (ang. \emph{polymorphism}) polega na wykorzystaniu wspólnego
+    interfejsu dla wielu typów. Typy prezentujące ten interfejs mogą być używane
+    zamiennie.
+
+    \vspace{1em}
+
+    Polimorfizm w odniesieniu do funkcji oznacza, że może ona działać na wielu
+    typach.\footnote{Jest to \emph{de facto} druga strona tego co powiedzieliśmy
+    o typach, bo można powiedzieć, że funkcja akceptuje typy spełniające pewien
+    interfejs i w ten sposób zatoczyć koło.}
+
+    \vspace{1em}
+
+    W C++ żeby móc wykorzystać polimorfizm potrzebe są wskaźniki lub referencje
+    (na etapie działania programu, ang. \emph{run time}), lub szablony (na
+    etapie kompilacji, ang. \emph{compile time}).
+\end{frame}
+
+\begin{frame}
+    \frametitle{Po co? (moim zdaniem)}
+    \framesubtitle{OOP}
+
+    Dziedziczenie w C++ jest sposobem na reprezentację relacji między typami
+    danych. Czyli jego \emph{pierwszorzędną} rolą jest zapewnienie hierarchii
+    typów, a dopiero \emph{drugorzędną} (niemal przy okazji) dziedziczenie
+    implementacji.
+
+    % \vspace{1em}
+
+    % Polimorfizm w C++ jest sposobem na podanie typu \emph{pochodnego} jako argumentu
+    % tam, gdzie parametr jest zadeklarowany jako typ \emph{bazowy}.
+
+    \vspace{1em}
+
+    Najprościej jak się da, nie ma co sobie komplikować życia. Jeśli chcemy
+    współdzielić implementację mamy do tego dedykowany mechanizm -
+    \emph{procedural abstraction}\footnote{patrz pierwszy wykład} czyli funkcje.
+\end{frame}
+
+%% po co dziedziczenie?
+%%      - ontological inheritance, specialisation: T is a specific kind of B
+%%      - abstract data type inheritance, substitution: T behaves as if it was B
+%%      - implementation inheritance, code sharing: T has all properties of B,
+%%        but augments them in certain ways
+
+\section{Zadania (OOP)}
+
+\begin{frame}
+    \frametitle{Zadanie: kalkulator}
+    \label{lecture_exercise_5}
+
+    Rozwinąć kalkulator napisany w stylu obiektowym tak, żeby nie odbiegał
+    funkcjonalnością od kalkulatora napisanego w stylu proceduralnym
+    zaimplementowanego w ramach poprzednich zajęć.
+
+    Kod do wystartowania znajduje się w repozytorium z
+    materiałami\footnote{\url{https://git.sr.ht/~maelkum/education-introduction-to-programming-cxx}}
+    w plikach \texttt{src/04-rpn-calculator-oo.cpp} (implementacja) i
+    \texttt{include/RPN\_calculator.h} (plik nagłówkowy).
+
+    \vspace{1em}
+
+    {\footnotesize
+    Wasz kod powinien znaleźć się w plikach
+    \texttt{src/s04-rpn-calculator-oo.cpp} (implementacja) i
+    \texttt{include/RPN\_calculator.h} (plik nagłówkowy).}
+\end{frame}
+
+\section{Podsumowanie}
+
+\begin{frame}
+    \frametitle{Co nowego?}
+    \frametitle{Podsumowanie}
+
+    Student powinien umieć:
+
+    \begin{enumerate}
+        \item samodzielnie zaprojektować własny typ danych, jego pola i funkcje
+            składowe
+        \item wytłumaczyć czym jest i jak działa funkcja składowa, oraz czym
+            jest {\tt this}
+        \item powiedzieć jaka jest rola konstruktora
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadania}
+    \framesubtitle{Podsumowanie}
+
+    Zadania znajdują się na slajdach
+    \ref{lecture_exercise_0},
+    \ref{lecture_exercise_1},
+    \ref{lecture_exercise_2},
+    \ref{lecture_exercise_3},
+    \ref{lecture_exercise_4},
+    \ref{lecture_exercise_5}.
+\end{frame}
+
+\end{document}

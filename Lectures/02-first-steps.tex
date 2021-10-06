@@ -1,0 +1,1252 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{epigraph}
+
+\renewcommand{\epigraphsize}{\scriptsize}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{000000}
+\setbeamercolor{lower separation line head}{bg=xbarcolor}
+\setbeamercolor{lower separation line foot}{bg=xbarcolor}
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{Pierwsze kroki (płytka woda)}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={[*}{*]},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{red}]{@}{@},
+moredelim=**[is][\color{gray}]{`}{`},
+moredelim=**[is][\color{olive}]{$}{$}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{Pierwszy program}
+
+\begin{frame}[fragile]
+    \frametitle{Tradycyjny pierwszy program}
+    \label{canonical_1st_program_hello_world}
+
+    Tradycją w światku programistów jest, aby pierwszym programem napisanym w
+    nowym języku było wypisanie na ekran tekstu ''{\tt Hello, World!}''.
+    W C++ taki program wygląda następująco:
+
+    \begin{lstlisting}
+    #include <iostream>
+
+    auto main() -> int
+    {
+        std::cout << "Hello, World!\n";
+        return 0;
+    }
+    \end{lstlisting}
+
+    Na jego przykładzie omówię strukturę programu.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Pliki nagłówkowe}
+
+    {\footnotesize
+    \begin{lstlisting}
+    @#include <iostream>@
+
+    auto main() -> int
+    {
+        std::cout << "Hello, World!\n";
+        return 0;
+    }
+    \end{lstlisting}}
+
+    Pliki nagłówkowe zawierają deklaracje funkcji, zmiennych, stałych, oraz
+    struktur danych. Bez ''podłączenia'' nagłówków do naszego kodu źródłowego
+    kompilator nie będzie świadomy istnienia rzeczy zdefiniowanych w tych
+    plikach i nie będzie możliwe ich użycie.
+
+    Sposobem na dołączenie plików nagłówkowych do naszego kodu źródłowego jest
+    \emph{dyrektywa}~{\tt \#include}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Nazwa funkcji}
+    \framesubtitle{Definicja funkcji}
+
+    {\footnotesize
+    \begin{lstlisting}
+    #include <iostream>
+
+    @auto main@() -> int
+    {
+        std::cout << "Hello, World!\n";
+        return 0;
+    }
+    \end{lstlisting}}
+
+    Definicję funkcji rozpoczyna \emph{słowo kluczowe} {\tt auto}, po którym podana
+    jest nazwa funkcji -- np. {\tt main}.
+
+    Nazwa funkcji może składać się wyłącznie z małych i wielkich liter, znaków
+    podkreślenia ({\tt \_}) i cyfr, oraz \textbf{musi} rozpocząć się literą.
+
+    {\tiny
+    W szkole na matematyce pisało się {\tt f(x) = x + 1}. Nazwą funkcji było
+    oczywiście {\tt f}.
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Lista parametrów formalnych funkcji}
+    \framesubtitle{Definicja funkcji}
+
+    {\footnotesize
+    \begin{lstlisting}
+    #include <iostream>
+
+    auto main@()@ -> int
+    {
+        std::cout << "Hello, World!\n";
+        return 0;
+    }
+    \end{lstlisting}}
+
+    Po nazwie podana jest lista \emph{parametrów formalnych} funkcji, czyli
+    wartości, których podania funkcja będzie wymagała przy jej wywołaniu. Lista
+    ta może być pusta.
+
+    {\tiny
+    W szkole na matematyce pisało się {\tt f(x) = x + 1}. Parametrem formalnym
+    funkcji {\tt f} jest w tym przypadku {\tt x}.
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Typ zwracany}
+    \framesubtitle{Definicja funkcji}
+
+    {\footnotesize
+    \begin{lstlisting}
+    #include <iostream>
+
+    auto main() @-> int@
+    {
+        std::cout << "Hello, World!\n";
+        return 0;
+    }
+    \end{lstlisting}}
+
+    Kolejnym elementem jest \emph{typ zwracany} (ang. \emph{return type})
+    funkcji, czyli typ wartości produkowanych przez daną funkcję. Zapisuje się
+    go po ''strzałce''.
+
+    Jeśli funkcja nie produkuje żadnych wartości należy użyć typu {\tt void}.
+
+    {\tiny
+    W szkole na matematyce pisało się {\tt f(x) = x + 1} i nie podawało sie typu
+    zwracanego. W domyśle typem tym była ''liczba''.
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Deklaracja funkcji}
+    \framesubtitle{Definicja funkcji}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <iostream>`
+
+    auto main() -> int@;@
+    `{`
+        `std::cout << "Hello, World!\n";`
+        `return 0;`
+    `}`
+    \end{lstlisting}}
+
+    Gdyby po typie zwracanym wpisać średnik powstałaby \emph{deklaracja
+    funkcji}. Takie deklaracje umieszcza się w plikach nagłówkowych. Są one
+    deklaracją tego, że definicja takiej funkcji będzie dla kompilatora dostępna
+    i powinien on pozwolić na jej użycie.
+
+    {\tiny
+    W szkole na matematyce pisało się {\tt f(x) = x + 1} i nie występowało coś
+    takiego jak deklaracja.
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Ciało funkcji 1}
+    \framesubtitle{Definicja funkcji}
+
+    {\footnotesize
+    \begin{lstlisting}
+    #include <iostream>
+
+    auto main() -> int
+    @{@
+        std::cout << "Hello, World!\n";
+        return 0;
+    @}@
+    \end{lstlisting}}
+
+    Po typie zwracanym zapisuje się \emph{ciało funkcji}, czyli grupę
+    instrukcji, których dana funkcja jest abstrakcją\footnote{patrz
+    \emph{procedural abstraction} z poprzedniego wykładu}. Ciało funkcji mysi
+    być otoczone nawiasami klamrowymi.
+
+    {\tiny
+    W szkole na matematyce pisało się {\tt f(x) = x + 1} i trzeba było otaczać
+    ciała funkcji (czyli {\tt x + 1}) nawiasami klamrowymi.
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Ciało funkcji 2}
+    \framesubtitle{Definicja funkcji}
+
+    {\footnotesize
+    \begin{lstlisting}
+    #include <iostream>
+
+    auto main() -> int
+    {
+        @std::cout << "Hello, World!\n";@
+        @return 0;@
+    }
+    \end{lstlisting}}
+
+    Ciało funkcji może składać się z dowolnej liczby instrukcji.
+
+    {\tiny
+    W szkole na matematyce pisało się {\tt f(x) = x + 1}, a ciałem funkcji było
+    zazwyczaj jakieś proste działanie.
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Ciało funkcji 3}
+    \framesubtitle{Definicja funkcji}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <iostream>`
+
+    `auto main() ->` @int@
+    `{`
+        `std::cout << "Hello, World!\n";`
+        return @0@;
+    `}`
+    \end{lstlisting}}
+
+    Jeśli funkcja produkuje jakąś wartość (jej typem zwracanym nie jest {\tt
+    void}), to \textbf{musi} pojawić się w jej ciele instrukcja {\tt return}.
+
+    Typ wartości zwróconej przez instrukcję {\tt return} \textbf{musi} się
+    zgadzać z typem zwracanym deklarowanym przez funkcję.
+
+    {\tiny
+    W szkole na matematyce pisało się {\tt f(x) = x + 1} i oczywistym było, że
+    zwracaną wartością jest wynik dodawania.
+    }
+\end{frame}
+
+%% BEGIN: W szkole na matematyce...
+
+\begin{frame}[fragile]
+    \frametitle{Nazwa funkcji}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    f
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto f
+    \end{lstlisting}}
+    \vspace{3em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Lista parametrów formalnych}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `f`(x)
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    `auto f`(int const x)
+    \end{lstlisting}}
+    \vspace{3em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Typ zwracany}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `f(x)`
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    `auto f(int const x)` -> int
+    \end{lstlisting}}
+    \vspace{3em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Ciało funkcji}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `f(x)` = x + 1
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    `auto f(int const x) -> int`
+    {
+        return (x + 1);
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Nazwa funkcji}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    main
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto main
+    \end{lstlisting}}
+    \vspace{4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Lista parametrów formalnych}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `main`()
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    `auto main`()
+    \end{lstlisting}}
+    \vspace{4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Typ zwracany}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `main()`
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    `auto main()` -> int
+    \end{lstlisting}}
+    \vspace{4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Ciało funkcji}
+    \framesubtitle{''W szkole na matematyce'' \emph{vs} C++}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `main(x)` = print("Hello, World!"), 0
+    \end{lstlisting}}
+
+    vs
+
+    {\footnotesize
+    \begin{lstlisting}
+    `auto main() -> int`
+    {
+        std::cout << "Hello, World!\n";
+        return 0;
+    }
+    \end{lstlisting}}
+\end{frame}
+
+%% END: W szkole na matematyce...
+
+\begin{frame}[fragile]
+    \frametitle{Operator przekierowania: {\tt <}{\tt <}}
+
+    Wracając do przykładu ze slajdu \ref{canonical_1st_program_hello_world}.
+    Może nie być jasne co dzieje się w tej linijce:
+
+    \vspace{1em}
+
+    \begin{lstlisting}
+    std::cout << "Hello, World!\n";
+    \end{lstlisting}
+
+    \vspace{1em}
+
+    Otóż...
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Operator przekierowania: {\tt <}{\tt <}}
+
+    Do zmiennej globalnej {\tt std::cout}
+    {\scriptsize
+    \begin{lstlisting}
+    @std::cout@ << "Hello, World!\n";
+    \end{lstlisting}}
+
+    \vspace{1em}
+
+    ...za pomocą \emph{operatora przekierowania}
+    {\scriptsize
+    \begin{lstlisting}
+    std::cout @<<@ "Hello, World!\n";
+    \end{lstlisting}}
+
+    \vspace{1em}
+
+    ...wysyłany jest napis {\tt Hello World!\textbackslash n} (w C++ napisy ograniczane są
+    znakami cudzysłowu).
+    {\scriptsize
+    \begin{lstlisting}
+    std::cout << @"Hello, World!\n"@;
+    \end{lstlisting}}
+
+    \vspace{1em}
+
+    Co spowoduje wypisanie tego napisu na ekran. Można w ten sposób wypisać na
+    ekran różne wartości (liczbowe, logiczne, itd.).
+\end{frame}
+
+\begin{frame}
+    \frametitle{Przykładowy kod}
+
+    Kod dla programu {\tt Hello, World!} znajduje się w repozytorium z
+    zajęciami\footnote{\url{https://git.sr.ht/~maelkum/education-introduction-to-programming-cxx}}
+    w pliku `{\tt src/00-hello-world.cpp}'
+    Można go skompilować następującym poleceniem:
+
+    \vspace{1em}
+    {\tt make build/00-hello-world.bin}
+    \vspace{1em}
+
+    Uruchomienie:
+
+    \vspace{1em}
+    {\tt ./build/00-hello-world.bin}
+    \vspace{1em}
+
+    Zadanie: zmienić kod tak, żeby wypisywał {\tt Hello,} a potem imię studenta
+    i zapisać w pliku {\tt src/s01-hello-me.cpp}.
+    \label{lecture_exercise_0}
+\end{frame}
+
+\section{argv}
+
+\begin{frame}
+    \frametitle{Argumenty wiersza poleceń}
+
+    W repozytorium z zajęciami znajduje się plik `{\tt src/01-hello-argv.cpp}'
+    Zawiera on kod źródłowy programu, który używa argumentów przekazanych mu na
+    wierszu poleceń.
+
+    Można go skompilować następującym poleceniem:
+
+    \vspace{1em}
+    {\tt make build/00-hello-argv.bin}
+    \vspace{1em}
+
+    Uruchomienie:
+
+    \vspace{1em}
+    {\tt ./build/01-hello-argv.bin Kasia}
+    \vspace{1em}
+
+    Zadanie: sprawdzić się stanie jak nie poda się argumentu (tj., uruchomi
+    program bez ''{\tt Kasia}''.).
+    \label{lecture_exercise_1}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Parametry formalne funkcji main}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    Żeby mieć możliwość odczytania argumentów podanych do programu na wierszu
+    poleceń, lista parametrów formalnych funkcji {\tt main} musi wyglądać
+    następująco:
+
+    \vspace{1em}
+    \begin{lstlisting}
+    `auto main`(int argc, char* argv[]) `-> int`
+    \end{lstlisting}
+    \vspace{1em}
+
+    Na kolejnych slajdach objaśnię znaczenie każdego z tych parametrów.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Parametry formalne funkcji main -- {\tt argc}}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    \begin{lstlisting}
+    `auto main`(@int argc@, char* argv[]) `-> int`
+    \end{lstlisting}
+
+    {\tt argc} (od \emph{argument count}) przechowuje liczbę argumentów
+    przekazanych do programu jako liczbę całkowitą.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Parametry formalne funkcji main -- {\tt argv}}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    \begin{lstlisting}
+    `auto main`(int argc, @char* argv[]@) `-> int`
+    \end{lstlisting}
+
+    {\tt argv} (od \emph{argument values}) przechowuje wartości argumentów
+    przekazanych do programu. Typ parametru {\tt argv} może być nieco zagdkowy,
+    ale ta zagadka zostanie rozwiązana na kolejnych slajdach.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Parametr {\tt argv} -- tablica wskaźników do {\tt char}}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    Parametr {\tt argv} jest
+    \begin{lstlisting}
+    char* @argv@[]
+    \end{lstlisting}
+    \vspace{1em}
+
+    ...tablicą w stylu C (unikamy ich)
+    \begin{lstlisting}
+    char* argv@[]@
+    \end{lstlisting}
+    \vspace{1em}
+
+    ...wskaźników (oznaczanych przez {\tt *} za nazwą typu) do {\tt char}
+    \begin{lstlisting}
+    @char*@ argv[]
+    \end{lstlisting}
+    \vspace{1em}
+
+    {\tt char*} jest sposobem na reprezentację napisów w stylu C.
+\end{frame}
+
+\section{Wskaźnik i tablica w stylu C}
+
+\begin{frame}
+    \frametitle{The good, the bad, and the ugly ...w stylu C}
+
+    Język C++ wywodzi się z języka C. Jeśli dla jakiejś konstrukcji język C++
+    oferuje swój zamiennik, to ta odziedziczona jest określana jako ''w stylu
+    C'' (ang. \emph{C-style}).
+\end{frame}
+
+\begin{frame}
+    \frametitle{The ugly - wskaźniki}
+    \framesubtitle{The good, the bad, and the ugly ...w stylu C}
+
+    Konstrukcją ''brzydką'' są wskaźniki.
+
+    \vspace{1em}
+
+    Ich typy są nieintuicyjne w zapisie, a wskaźniki same w sobie nie oferują
+    żadnej gwarancji poprawności - nigdy nie wiemy czy wskaźnik przypadkiem nie
+    jest \emph{wiszący}\footnote{wytłumaczenie na slajdzie
+    \ref{what_is_a_dangling_pointer}}.
+
+    \vspace{1em}
+
+    W C++ część zadań wskaźników przejęły \emph{referencje} (ang.
+    \emph{reference}).
+\end{frame}
+
+\begin{frame}
+    \frametitle{The bad - tablice w stylu C}
+    \framesubtitle{The good, the bad, and the ugly ...w stylu C}
+
+    Konstrukcją ''złą'' są tablice.
+
+    \vspace{1em}
+
+    Bardzo łatwo gubią rozmiar (który dla pewności musi być przechowywany w
+    osobnej zmiennej), a jeśli zostanie on zgubiony niemożliwe jest jego
+    odtworzenie. Na dodatek, tablice bardzo ''chętnie'' degradują się do
+    wskaźników zatracając całkowicie informację o tym, że przechowują $n$
+    elementów i nabywając wszystkie wady wskaźnika.
+
+    \vspace{1em}
+
+    W C++ zamiennikiem (dużo lepszym) tablic w stylu C są: {\tt std::array} (dla
+    tablic o stałym rozmiarze) i {\tt std::vector} (dla tablic o zmiennym
+    rozmiarze).
+\end{frame}
+
+\subsection{Wskaźnik}
+
+\begin{frame}
+    \frametitle{Wskaźnik}
+
+    Czym jest wskaźnik\footnote{Część ''Data structures'' na poprzednim
+    wykładzie.}? Wskaźnik jest adresem fragmentu pamięci (zawierającego dane
+    typu $t$).
+    \label{what_is_a_pointer}
+
+    \vspace{1em}
+
+    Mając wskaźnik można ''dostać się'' do danych umieszczonych w pamięci pod
+    adresem, na który wskazuje wskaźnik.
+
+    \vspace{1em}
+
+    Typ wskaźnika zapisuje się jako: {\tt $t$*}\\gdzie $t$ jest typem danych
+    leżących pod adresem, na który wskazuje wskaźnik.\\
+    Typem oznaczającym ''wskaźnik do {\tt int}'' będzie {\tt int*}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Tworzenie wskaźników}
+    \framesubtitle{Wskaźnik}
+
+    Aby otrzymać adres fragmentu pamięci zawierającego zmienną {\tt x} używa się
+    operatora {\tt \&} (ampersand)
+
+    \begin{lstlisting}
+    auto x         = int{42};
+    auto x_pointer = @&x@;
+    \end{lstlisting}
+    \vspace{2.5em}
+
+    Wskaźnik otrzymujemy również w sytuacji gdy alokujemy pamięć dynamicznie.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Używanie wskaźników}
+    \framesubtitle{Wskaźnik}
+
+    Aby użyć (odczytać lub zmodyfikować) danych z fragmentu pamięci wskazywanego
+    przez wskażnik używa się operatora {\tt *} (gwiazdka)
+
+    \begin{lstlisting}
+    auto x         = int{42};  `// x contains 42`
+    auto x_pointer = &x;  `// x_pointer contains address of x`
+
+    auto y         = (@*x_pointer@ + 1);  `// y contains 43`
+    @*x_pointer@ = 44;  `// x contains 44`
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Po co są wskaźniki?}
+    \framesubtitle{Wskaźnik}
+
+    Wskaźniki są niezbędne jeśli chcemy korzystać z dynamicznej alokacji
+    pamięci. Jeśli jakaś wartość jest alokowana w czasie wykonywania programu,
+    jest ona umieszczana w innym obszarze pamięci (na \emph{stercie}, ang.
+    \emph{heap}) niż wartości alokowane podczas kompilacji (na \emph{stosie},
+    ang. \emph{stack}) i niemożliwy byłby bezpośredni dostęp do niej.
+
+    \vspace{1em}
+
+    Wskaźniki są niezbędne również jesli chcemy przekazać dane jako argument do
+    funkcji, ale ich kopiowanie (domyślny sposób przekazywania argumentów)
+    byłoby kosztowne. W takim wypadku przekazujemy funkcji jedynie adres danych
+    i pozwalamy jej używać ich ''w miejscu''.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Problemy ze wskaźnikami}
+    \framesubtitle{Wskaźnik}
+    \label{what_is_a_dangling_pointer}
+
+    Wskaźniki mogą być \emph{zerowe} (ang. \emph{null pointer}, słowo kluczowe
+    {\tt nullptr}), czyli wskazywać na adres 0 w pamięci.
+
+    \vspace{1em}
+
+    Wskaźniki mogą być \emph{wiszące} (ang. \emph{dangling pointer}), czyli
+    wskazywać na adres w pamięci, który już nie należy do naszego programu (np.
+    został zdealokowany i oddany do systemu operacyjnego).
+
+    \vspace{1em}
+
+    Jeśli spróbujemy użyć wiszącego lub zerowego wskaźnika do odczytania lub
+    modyfikacji danych nasz komputer może wybuchnąć i mogą nam ''z nosa
+    wylecieć
+    demony\footnote{\url{https://en.wikipedia.org/wiki/Undefined_behavior}}''.
+    Jest to tzw. \emph{zachowanie niezdefiniowane} (ang. \emph{undefined
+    behaviour}) - jest ono źródłem wielu awarii i naruszeń bezpieczeństwa w
+    programach.
+\end{frame}
+
+\subsection{Tablica w stylu C}
+
+\begin{frame}
+    \frametitle{Tablica w stylu C}
+
+    Czym jest tablica w stylu C\footnote{Część ''Data structures'' na poprzednim
+    wykładzie.}? Tablica w stylu C jest fragmentem pamięci wystarczająco
+    dużym żeby pomieścić $n$ wartości typu $t$.
+    \label{what_is_a_c_style_array}
+
+    \vspace{1em}
+
+    Typ tablicy zapisuje się jako: {\tt $t$[$n$]} ($n$ można pominąć)\\
+    gdzie $t$ jest typem danych leżących pod adresem, na który wskazuje tablica,
+    a $n$~rozmiarem tablicy.\\
+    Typem oznaczającym ''tablicę \emph{nie-wiadomo-ilu} wartości {\tt int}'' będzie {\tt
+    int[]}\\
+    Typem oznaczającym ''tablicę 4 wartości {\tt int}'' będzie {\tt int[4]}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Tworzenie tablic w stylu C}
+    \framesubtitle{Tablica w stylu C}
+
+    Aby stworzyć tablicę $n$ wartości typu $t$ używa się następującej składni:
+
+    \begin{lstlisting}
+    $t$ array[$n$];
+    \end{lstlisting}
+
+    Dla przykładu, tablica 4 wartości typu {\tt int}:
+
+    \begin{lstlisting}
+    $int$ array[$4$];
+    \end{lstlisting}
+
+    Kompilator może też określić rozmiar tablicy automatycznie jeśli podamy
+    elementy jakimi tablica powinna zostać zainicjalizowana:
+
+    \begin{lstlisting}
+    $int$ array[] = { @0@, @1@, @2@, @3@ };
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Używanie tablic w stylu C}
+    \framesubtitle{Tablica w stylu C}
+
+    Aby użyć (do odczytu lub modyfikacji) elementu $n$ w tablicy używa się
+    operatora {\tt []}
+
+    \begin{lstlisting}
+    int array[] = { 42, 64, 127, -1 };
+    auto x = array@[@0@]@;  `// x contains 42`
+    array@[@0@]@ = 8;  `// array[0] contains 8`
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Po co są tablice?}
+    \framesubtitle{Tablica w stylu C}
+
+    Tablice służą do przechowywania wielu wartości tego samego typu.
+
+    \vspace{1em}
+
+    W C++ dostępne są lepsze zamienniki tablic: {\tt std::array} i {\tt
+    std::vector}.
+\end{frame}
+
+\section{argv (c.d.)}
+
+\begin{frame}[fragile]
+    \frametitle{Parametry formalne funkcji main}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    \vspace{1em}
+    \begin{lstlisting}
+    `auto main`(int argc, char* argv[]) `-> int`
+    \end{lstlisting}
+    \vspace{1em}
+
+    Kiedy wiadomo jakie jest znaczenie każdego z parametrów formalnych funkcji
+    {\tt main} oraz jak używa się wartości ich typów możemy kontynuować dyskusję
+    na temat ich używania.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Konwersja na typ {\tt std::string}}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    Argumenty wiersza poleceń dostarczane są do programu w formie napisów w
+    stylu C. Zazwyczaj nie jest to forma w jakiej są potrzebne wewnątrz
+    programu.
+
+    Aby dokonać konwersji z napisu w stylu C na {\tt std::string} (''napis w
+    stylu C++'') możemy użyć następującego zapisu:
+
+    \begin{lstlisting}
+    `auto main(int argc, char* argv[]) -> int`
+    `{`
+        auto const name = @std::string{argv[1]}@;
+        `std::cout << "Hello, " + name + "!\n";`
+        `return 0;`
+    `}`
+    \end{lstlisting}
+
+    Użycie typu {\tt std::string} wymaga dołączenia nagłówka {\tt string}:
+    \begin{lstlisting}
+    #include <string>
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Konwersja na typy liczbowe}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    Aby dokonać konwersji z napisu (w stylu C, lub {\tt std::string}) na typ
+    liczbowy można użyć następujących funkcji z biblioteki standardowej:
+
+    \vspace{1em}
+    {\footnotesize
+    \begin{lstlisting}
+    std::stoi(argv[n]);  `// convert to an integer`
+    std::stof(argv[n]);  `// convert to a floating point value`
+    \end{lstlisting}}
+    \vspace{1em}
+
+    Funkcja {\tt
+    std::stoi}\footnote{\url{https://en.cppreference.com/w/cpp/string/basic_string/stol}}
+    dokonuje konwersji na typ {\tt int}, a funkcja {\tt
+    std::stof}\footnote{\url{https://en.cppreference.com/w/cpp/string/basic_string/stof}}
+    na typ {\tt float}.
+    Użycie którejkolwiek z tych funkcji wymaga dołączenia nagłówka {\tt string}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Konwersja na typy liczbowe}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    Wykorzystując wiedzę z poprzedniego slajdu można napisać program, który
+    będzie dodawać za użytkownika:
+
+    {\scriptsize
+    \begin{lstlisting}
+    #include <iostream>  `// for std::cout, std::cerr, and std::cin`
+    #include <string>
+
+    auto main(int argc, char* argv[]) -> int
+    {
+        auto const a = std::stoi(argv[1]);
+        auto const b = std::stoi(argv[2]);
+        std::cout << (a + b) << "\n";
+        return 0;
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadania}
+    \framesubtitle{Argumenty wiersza poleceń}
+
+    Zadania:
+    \label{lecture_exercise_2}
+
+    \begin{enumerate}
+    \item zapisać program z poprzedniego slajdu w repozytorium w pliku {\tt
+        src/s01-add.cpp}
+    \item napisać i zapisać w repozytorium podobne programy dla odejmowania
+        ({\tt s01-sub.cpp}), mnożenia ({\tt s01-mul.cpp}), i dzielenia ({\tt
+        s01-div.cpp}).
+    \item sprawdzić co się stanie przy podaniu \emph{naprawdę dużych} liczb (np.
+        12345678901234567890)
+    \end{enumerate}
+
+    Kompilacja i uruchomienie:
+    {\footnotesize
+    \begin{lstlisting}
+    make build/s01-add.bin   `# how to compile`
+    ./build/s01-add.bin 2 2  `# how to run`
+    \end{lstlisting}}
+\end{frame}
+
+% \section{Pobieranie danych od użytkownika}
+\section{User input}
+
+\begin{frame}
+    \frametitle{Pobieranie danych od użytkownika}
+
+    Nie zawsze możliwe jest wymaganie aby wszystkie dane podać na wierszu
+    poleceń. Często nie jest to też najwygodniejsze rozwiązanie.
+
+    Jeśli potrzeba jest pobrania od użytkownika danych w trakcie działania
+    programu, można do tego wykorzystać standardowy strumień wejścia -- {\tt
+    std::cin} (dostępny po dołączeniu nagłówka {\tt iostream}).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Odczyt danych}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Korzystając z wiedzy z poprzedniego wykładu wiemy jak odczytać dane ze
+    standardowego strumienia wejścia -- za pomocą funkcji {\tt std::getline}
+    (dostępnej po dołączeniu nagłówka {\tt iostream}):
+
+    \begin{lstlisting}
+    auto line = std::string{};
+    std::getline(std::cin, line);
+    \end{lstlisting}
+
+    Jak wyglądałoby to w pełnym programie?
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Funkcja {\tt std::getline}}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    {\footnotesize
+    \begin{lstlisting}
+    #include <iostream>
+    #include <string>
+
+    auto main() -> int
+    {
+        auto name = std::string{};
+        std::getline(std::cin, name);
+
+        std::cout << "Hello, " << name << "!\n";
+
+        return 0;
+    }
+    \end{lstlisting}}
+
+    Zadanie: zapisać ten program w repozytorium w pliku {\tt
+    src/s01-hello-name.cpp}, skompilować, i uruchomić.
+    \label{lecture_exercise_3}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Funkcja {\tt std::getline} (c.d.)}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Odczytywanie danych w ten sposób może być niewygodne. Weźmy na tapet
+    przykład programu dodającego:
+
+    {\tiny
+    \begin{lstlisting}
+    #include <iostream>
+    #include <string>
+
+    auto main() -> int
+    {
+        auto tmp = std::string{};  `// temporary variable`
+
+        std::getline(std::cin, tmp);
+        auto const a = std::stoi(tmp);
+
+        std::getline(std::cin, tmp);
+        auto const b = std::stoi(tmp);
+
+        std::cout << (a + b) << "\n";
+
+        return 0;
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Funkcja {\tt std::getline} (c.d.)}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Będzie jeszcze gorzej jeśli będziemy chcieli wyświetlić użytkownikowi
+    wskazówkę dotyczącą tego co powinien wpisać:
+
+    {\tiny
+    \begin{lstlisting}
+    #include <iostream>
+    #include <string>
+
+    auto main() -> int
+    {
+        auto tmp = std::string{};  `// temporary variable`
+
+        std::getline(std::cin, tmp);
+        std::cout << "a = ";
+        auto const a = std::stoi(tmp);
+
+        std::cout << "b = ";
+        std::getline(std::cin, tmp);
+        auto const b = std::stoi(tmp);
+
+        std::cout << (a + b) << "\n";
+
+        return 0;
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\subsection{Abstrakcja proceduralna}
+
+\begin{frame}
+    \frametitle{Procedural abstraction to the rescue}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Możemy uprościć sobie życie, zmniejszyć liczbę powtórzonych linii kodu, oraz
+    usunąć zbędne zmienne tymczasowe ({\tt tmp} z poprzednich slajdów). Jak to
+    zrobić?
+
+    Wykorzystując poznany na poprzednim wykładzie mechanizm \emph{procedural
+    abstraction} i definiując własną funkcję.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Własne funkcje - po co?}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Wewnątrz funkcji można zawrzeć fragment logiki, który w naszym kodzie
+    powtarza się $n$ razy. Nie ma po co pisać tego samego kodu więcej razy niż
+    ma to sens i jest potrzebne.
+
+    Zdefiniujmy więc funkcję, która:
+    \begin{enumerate}
+        \item wyświetli użytkownikowi wskazówkę dotyczącą tego jakie dane powinien wpisać
+        \item poczeka aż te dane użytkownik wpisze
+        \item dokona ich konwersji na liczbę całkowitą i zwróci tą liczbę do
+            funkcji wywołującej
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definicja własnej funkcji -- nazwa}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Jak powinna nazywać się funkcja, którą zdefiniujemy?
+
+    Najlepiej jeśli jej nazwa będzie odzwierciedlać jej zastosowanie. Skoro
+    funkcja ma pobrać od użytkownika liczbę całkowitą nazwijmy ją {\tt
+    ask\_user\_for\_integer}.
+
+    \begin{lstlisting}
+    auto ask_user_for_integer
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definicja własnej funkcji -- lista parametrów formalnych}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Jakie parametry formalne powinna posiadać funkcja, którą zdefiniujemy?
+
+    Skoro ma popowiedzieć użytkownikowi co powinien wpisać dobrze byłoby żeby
+    wyświetliła mu jakiś tekst na ekranie. Tekst, czyli napis, czyli {\tt
+    std::string}. Niech nasza funkcja przyjmuje więc {\tt std::string} jako swój
+    parametr formalny.
+
+    \begin{lstlisting}
+    `auto ask_user_for_integer`(std::string prompt)
+    \end{lstlisting}
+
+    Dlaczego parametr nazywa się {\tt prompt}? Jest to słowo określające
+    wszelkie ''znaki zachęty'' dla użytkownika.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definicja własnej funkcji -- typ zwracany}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Jaki typ powinna zwracać funkcja, którą zdefiniujemy?
+
+    Skoro chcemy uzyskać liczbę całkowitą to dobrze byłoby żeby nasza funkcja
+    takie liczby produkowała. Ustalmy więc typ zwracany na {\tt int}.
+
+    \begin{lstlisting}
+    `auto ask_user_for_integer(std::string prompt)` -> int
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definicja własnej funkcji -- ciało}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Nasza funkcja powinna wyświetlić użytkownikowi wskazówkę dotyczącą tego co
+    ma wpisać. Wyświetlmy więc taką wskazówkę na ekranie:
+
+    {\scriptsize
+    \begin{lstlisting}
+    `auto ask_user_for_integer(std::string prompt) -> int`
+    `{`
+        std::cout << prompt;
+    `}`
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definicja własnej funkcji -- ciało}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Możemy dodatkowo podpowiedzieć, że chodzi o liczbę całkwitą.
+    Niech funkcja robi to automatycznie, żeby nie trzeba było za każdym razem
+    umieszczać tej informacji we wskazówce:
+
+    {\scriptsize
+    \begin{lstlisting}
+    `auto ask_user_for_integer(std::string prompt) -> int`
+    `{`
+        `std::cout << prompt` << " int:"`;`
+    `}`
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definicja własnej funkcji -- ciało}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    Skoro użytkownik został poinformowany czego od niego chcemy, możnemy
+    spróbować pobrać od niego dane...
+
+    {\scriptsize
+    \begin{lstlisting}
+    `auto ask_user_for_integer(std::string prompt) -> int`
+    `{`
+        `std::cout << prompt << " int:";`
+        auto n = std::string{};
+        std::getline(std::cin, n);
+    `}`
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definicja własnej funkcji -- ciało}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    ...i zwrócić je, przekonwertowane na liczbę całkowitą:
+
+    {\scriptsize
+    \begin{lstlisting}
+    `auto ask_user_for_integer(std::string prompt) -> int`
+    `{`
+        `std::cout << prompt << " int:";`
+        `auto n = std::string{};`
+        `std::getline(std::cin, n);`
+        return std::stoi(n);
+    `}`
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Wykorzystanie funkcji}
+    \framesubtitle{Pobieranie danych od użytkownika}
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto main() -> int
+    {
+        auto const a = ask_user_for_integer("a = ");
+        auto const b = ask_user_for_integer("b = ");
+        std::cout << (a + b) << "\n";
+        return 0;
+    }
+    \end{lstlisting}}
+
+    Zadanie: napisać nowe programy dodający, odejmujący, itd. z wykorzystaniem
+    funkcji {\tt ask\_user\_for\_integer} i zapisać je w plikach {\tt
+    src/s01-X-stdin.cpp} (gdzie $X$ to odpowiednio {\tt add} dla dodawania, {\tt
+    sub} dla odejmowania, itd. - jak w poprzednim zadaniu).
+    \label{lecture_exercise_4}
+\end{frame}
+
+\section{Podsumowanie}
+
+\begin{frame}
+    \frametitle{Co nowego?}
+    \frametitle{Podsumowanie}
+
+    Student powinien umieć:
+
+    \begin{enumerate}
+        \item pobrać argumenty podane do programu na wierszu poleceń
+        \item powiedzieć czym jest wskaźnik i tablica w stylu C
+        \item pobrać dane ze standardowego strumienia wejścia ({\tt std::cin})
+        \item zdefiniować własną funkcję
+        \item przeanalizować proste wymagania dotyczące funkcjonalności funkcji
+            i określić jak powinna wyglądać jej nazwa, parametry formalne i typ
+            zwracany
+        \item zapisać kod w repozytorium, skompilować go, i uruchomić wynikowy
+            program
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadania}
+    \framesubtitle{Podsumowanie}
+
+    Zadania znajdują się na slajdach
+    \ref{lecture_exercise_0},
+    \ref{lecture_exercise_1},
+    \ref{lecture_exercise_2},
+    \ref{lecture_exercise_3},
+    \ref{lecture_exercise_4}.
+
+    Pliki jakie powinny pojawić się w repozytorium:
+    \begin{enumerate}
+        \item {\tt src/s01-hello-me.cpp}
+        \item {\tt src/s01-add.cpp}
+        \item {\tt src/s01-sub.cpp}
+        \item {\tt src/s01-mul.cpp}
+        \item {\tt src/s01-div.cpp}
+        \item {\tt src/s01-hello-name.cpp}
+        \item {\tt src/s01-add-stdin.cpp}
+        \item {\tt src/s01-sub-stdin.cpp}
+        \item {\tt src/s01-mul-stdin.cpp}
+        \item {\tt src/s01-div-stdin.cpp}
+    \end{enumerate}
+\end{frame}
+
+\end{document}

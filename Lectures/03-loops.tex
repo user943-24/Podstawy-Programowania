@@ -1,0 +1,739 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[polish]{babel}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage{scrextend}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{epigraph}
+
+\renewcommand{\epigraphsize}{\scriptsize}
+
+\usetheme{-bjeldbak/beamerthemebjeldbak}
+
+\definecolor{xbarcolor}{HTML}{000000}
+\setbeamercolor{lower separation line head}{bg=xbarcolor}
+\setbeamercolor{lower separation line foot}{bg=xbarcolor}
+
+\title{Podstawy programownia (w języku C++)}
+\subtitle{Pętle}
+\author{Marek Marecki}
+\institute{Polsko-Japońska Akademia Technik Komputerowych}
+
+\lstset{basicstyle=\ttfamily\color{black},
+columns=fixed,
+escapeinside={[*}{*]},
+inputencoding=utf8,
+extendedchars=true,
+moredelim=**[is][\color{red}]{@}{@},
+moredelim=**[is][\color{gray}]{`}{`},
+moredelim=**[is][\color{olive}]{$}{$}}
+
+\begin{document}
+
+{%
+    \setbeamertemplate{headline}{}
+    \frame{\titlepage}
+}
+
+\section{{\tt while} i {\tt do-while}}
+
+\begin{frame}[fragile]
+    \frametitle{Po co?}
+    \framesubtitle{Pętla {\tt while}}
+
+    Pętla {\tt while} sprawdza się kiedy instrukcja przez nią wykonywana powinna
+    być powtarzana \emph{dopóki} pewien warunek jest spełniony.
+
+    \begin{lstlisting}
+    while (system_is_running()) {
+        process_events();
+    }
+    \end{lstlisting}
+
+    Istotne jest to, że warunek sprawdzany jest \emph{przed} wykonaniem
+    instrukcji.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Po co?}
+    \framesubtitle{Pętla {\tt do-while}}
+
+    Pętla {\tt do-while} sprawdza się kiedy instrukcja przez nią wykonywana powinna
+    być powtarzana \emph{dopóki} pewien warunek jest spełniony, ale musi być
+    wykonana \emph{co najmniej jeden raz}.
+
+    \begin{lstlisting}
+    do {
+        process_events();
+    } while (system_is_running());
+    \end{lstlisting}
+
+    Istotne jest to, że warunek sprawdzany jest \emph{po} wykonaniu
+    instrukcji.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Warunek}
+    \framesubtitle{Pętle {\tt while} i {\tt do-while}}
+
+    Warunek jest podawany w nawiasach po słowie kluczowym {\tt while}, i może
+    być w zasadzie dowolny.
+
+    \begin{lstlisting}
+    while (@system_is_running()@) `{
+        process_events();
+    }`
+    \end{lstlisting}
+
+    albo
+
+    \begin{lstlisting}
+    `do {
+        process_events();
+    }` while (@system_is_running()@)`;`
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Instrukcja}
+    \framesubtitle{Pętle {\tt while} i {\tt do-while}}
+
+    Instrukcja powtarzana przez pętlę jest podawana w nawiasach klamrowych:
+
+    \begin{lstlisting}
+    `while (system_is_running()) `{
+        @process_events();@
+    }
+    \end{lstlisting}
+
+    albo
+
+    \begin{lstlisting}
+    `do` {
+        @process_events();@
+    } `while (system_is_running());`
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Ad infinitum}
+    \framesubtitle{Pętle {\tt while} i {\tt do-while}}
+
+    Do implementacji pętli nieskończonych często wykorzystuje się konstrukcję
+    {\tt while-true}:
+
+    \begin{lstlisting}
+    while (@true@) `{
+        process_events();
+    }`
+    \end{lstlisting}
+
+    Pętle nieskończone są często spotykane w ''sercach'' długo działających
+    programów (systemów operacyjnych, gier, itp.), których zakończenie jest
+    wywoływane przez jakieś zewnętrzne zdarzenie (np. akcję użytkownika), a nie
+    przez wewnętrzny stan programu (np. koniec danych do przetworzenia).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętle {\tt while} i {\tt do-while}}
+
+    \begin{lstlisting}
+    while
+    \end{lstlisting}
+    \vspace{2.4em}
+
+    vs
+
+    \vspace{2.4em}
+    \begin{lstlisting}
+      while
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętle {\tt while} i {\tt do-while}}
+
+    \begin{lstlisting}
+    `while` (condition_is_met())
+    \end{lstlisting}
+    \vspace{2.4em}
+
+    vs
+
+    \vspace{2.4em}
+    \begin{lstlisting}
+      `while` (condition_is_met());
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętle {\tt while} i {\tt do-while}}
+
+    \begin{lstlisting}
+    `while (condition_is_met())` {
+        take_action();  $// maybe never$
+    }
+    \end{lstlisting}
+
+    vs
+
+    \begin{lstlisting}
+    do {
+        take_action();  $// at least once$
+    } `while (condition_is_met());`
+    \end{lstlisting}
+\end{frame}
+
+\section{{\tt for}}
+
+\begin{frame}[fragile]
+    \frametitle{Po co?}
+    \framesubtitle{Pętla {\tt for}}
+
+    Pętla {\tt for} sprawdza się kiedy instrukcja przez nią wykonywana powinna
+    być powtarzana pewną \emph{ilość razy} określoną przez licznik pętli.
+
+    \begin{lstlisting}
+    std::cout << argv[0];
+    for (auto i = 1; i < argc; ++i) {
+        std::cout << " " << argv[i];
+    }
+    std::cout << "\n";
+    \end{lstlisting}
+
+    Istotne jest to, że warunek sprawdzany jest \emph{przed} wykonaniem
+    instrukcji.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Inicjalizacja licznika}
+    \framesubtitle{Pętla {\tt for}}
+
+    Licznik jest inicjalizowany \emph{wewnątrz} pętli, wewnątrz nawiasów po
+    słowie kluczowym {\tt for}:
+
+    \begin{lstlisting}
+    `std::cout << argv[0];`
+    for (@auto i = 1@; i < argc; ++i) `{
+        std::cout << " " << argv[i];
+    }
+    std::cout << "\n";`
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Warunek}
+    \framesubtitle{Pętla {\tt for}}
+
+    Warunek zapisywany jest po średniku kończącym inicjalizację licznika:
+
+    \begin{lstlisting}
+    `std::cout << argv[0];`
+    for (auto i = 1; @i < argc@; ++i) `{
+        std::cout << " " << argv[i];
+    }
+    std::cout << "\n";`
+    \end{lstlisting}
+
+    Warunek, tak jak w pętli {\tt while}, jest sprawdzany przed wykonaniem
+    instrukcji powtarzanej przez pętlę.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok}
+    \framesubtitle{Pętla {\tt for}}
+
+    Krok jest wykonywany \emph{po} instrukcji powtarzanej w pętli, i służy do
+    aktualizacji licznika:
+
+    \begin{lstlisting}
+    `std::cout << argv[0];`
+    for (auto i = 1; i < argc; @++i@) `{
+        std::cout << " " << argv[i];
+    }
+    std::cout << "\n";`
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Instrukcja}
+    \framesubtitle{Pętla {\tt for}}
+
+    Instrukcja powtarzana przez pętlę jest zapisywana w nawiasach klamrowych:
+
+    \begin{lstlisting}
+    `std::cout << argv[0];
+    for (auto i = 1; i < argc; ++i) `{
+        @std::cout << " " << argv[i];@
+    }
+    `std::cout << "\n";`
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla {\tt for}}
+
+    \begin{lstlisting}
+    for
+    \end{lstlisting}
+    \vspace{2.4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla {\tt for}}
+
+    \begin{lstlisting}
+    `for` (auto i = 1;;)
+    \end{lstlisting}
+    \vspace{2.4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla {\tt for}}
+
+    \begin{lstlisting}
+    `for` (`auto i = 1`; i < argc;)
+    \end{lstlisting}
+    \vspace{2.4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla {\tt for}}
+
+    \begin{lstlisting}
+    `for` (`auto i = 1`; `i < argc`; ++i)
+    \end{lstlisting}
+    \vspace{2.4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla {\tt for}}
+
+    \begin{lstlisting}
+    `for (auto i = 1; i < argc; ++i)` {
+        std::cout << " " << argv[i];
+    }
+    \end{lstlisting}
+\end{frame}
+
+\section{Zadania (pętle)}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: hasło}
+    \label{lecture_exercise_0}
+
+    Program, który jako argument na wierszu poleceń pobierze napis (hasło), a
+    potem będzie użytkownika prosił w pętli o ponowne podanie tego hasła dopóki
+    nie zostanie ono wpisane poprawnie. Dla przykładu\footnote{{\tiny na zielono
+    rzeczy wpisywane przez użytkownika}}:
+
+    \begin{lstlisting}
+    ./build/s03-password.bin student
+    password: $profesor$
+    password: $dziekan$
+    password: $student$
+    ok!
+    \end{lstlisting}
+
+    Kod źródłowy w pliku {\tt src/s03-password.cpp}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: odliczanie}
+    \label{lecture_exercise_1}
+
+    Program, który jako argument na wierszu poleceń pobierze liczbę i rozpocznie
+    odliczanie od niej (włącznie) do zera (włącznie). Dla przykładu:
+
+    \begin{lstlisting}
+    ./build/s03-countdown.bin 3
+    3...
+    2...
+    1...
+    0...
+    \end{lstlisting}
+
+    Kod źródłowy w pliku {\tt src/s03-countdown.cpp}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: gra w zgadywanie}
+    \label{lecture_exercise_2}
+
+    Program, który wylosuje\footnote{patrz slajd 44. z pierwszego wykładu}
+    liczbę całkowitą od 1 do 100 i będzie prosić użytkownika o zgadnięcie tej
+    liczby. Po nieudanej próbie program powinien wyświetlić wskazówkę (np. ''za
+    mała liczba'', ''za duża liczba'').
+
+    \begin{lstlisting}
+    ./build/s03-guessing-game.bin
+    guess: $10$
+    number too small!
+    guess: $90$
+    number too big!
+    guess: $50$
+    just right!
+    \end{lstlisting}
+
+    Kod źródłowy w pliku {\tt src/s03-guessing-game.cpp}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: FizzBuzz}
+    \label{lecture_exercise_3}
+
+    Program, który wczyta podaną jako argument na wierszu poleceń liczbę, a
+    następnie dla każdego $n$ w zakresie od 1 (włącznie) do tej liczby
+    (włącznie) wykona następujące rzeczy:
+
+    \begin{enumerate}
+        \item wypisze $n$ na ekran
+        \item jeśli $n$ jest podzielne przez 3 wypisze ''Fizz'' (np. {\tt 3
+            Fizz})
+        \item jeśli $n$ jest podzielne przez 5 wypisze ''Buzz'' (np. {\tt 5
+            Buzz})
+        \item jeśli $n$ jest podzielne przez 3 i 5 wypisze ''FizzBuzz'' (np.
+            {\tt 15 FizzBuzz})
+    \end{enumerate}
+
+    To czy liczba $a$ jest podzielna przez $n$ można sprawdzić operatorem {\tt
+    \%} (\emph{modulo}) zwracającym resztę z dzielenia; `{\tt a \% n}' zwróci
+    resztę z dzielenia $a$ przez $n$.
+
+    Kod źródłowy w pliku {\tt src/s03-fizzbuzz.cpp}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: {\tt echo(1)}}
+    \label{lecture_exercise_4}
+
+    Program, który wypisze argumenty podane mu na wierszu poleceń. Wypisane
+    argumenty muszą być odzielone znakiem spacji.
+
+    Kod źródłowy w pliku {\tt src/s03-echo.cpp}
+
+    \vspace{1em}
+
+    {\small
+    Ćwiczenie dodatkowe:
+    \begin{enumerate}
+        \item jeśli na początku pojawi się opcja {\tt -n} nie drukować znaku
+            nowej linii na końcu programu
+        \item jeśli na początku pojawi się opcja {\tt -r} wydrukować
+            argumenty w odwrotnej kolejności
+        \item jeśli na początku pojawi się opcja {\tt -l} wydrukować argumenty
+            po jednym na linię
+        \item obsłużyć sytuację, w której jednocześnie podane są opcje {\tt -r
+            -l} albo {\tt -r -n}
+    \end{enumerate}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zadanie: 99 Bottles of beer}
+    \label{lecture_exercise_5}
+
+    Program powinien w pętli wyświetlić tekst
+    piosenki\footnote{\url{https://en.wikipedia.org/wiki/99_Bottles_of_Beer}}.
+    Rozpoczynając od 99 (lub liczby podanej jako argument na wierszu poleceń)
+    program ma wypisać:
+
+    \emph{99 bottles of beer on the wall, 99 bottles of beer.\newline
+    Take one down, pass it around, 98 bottles of beer on the wall...}
+
+    \vspace{1em}
+
+    Po osiągnięciu 0 program ma wypisać:
+
+    \emph{No more bottles of beer on the wall, no more bottles of beer.\newline
+    Go to the store and buy some more, 99 bottles of beer on the wall...}
+
+    i zakończyć pracę.
+
+    \vspace{1em}
+
+    Kod źródłowy w pliku {\tt src/s03-beer.cpp}
+\end{frame}
+
+\section{range-based {\tt for}}
+
+\begin{frame}[fragile]
+    \frametitle{Po co?}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Pętla \emph{range-based} {\tt for} sprawdza się kiedy instrukcja przez nią
+    wykonywana powinna być powtórzona dla \emph{każdego elementu} pewnej
+    wartości.
+
+    \begin{lstlisting}
+    for (auto const& each : employees) {
+        pay_salary(each);
+    }
+    \end{lstlisting}
+
+    Kompilator języka C++ automatycznie wygeneruje kod, który będzie
+    odpowiedzialny za sprawdzenie warunku końca iteracji.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Element}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Zmienna (lub stała), która reprezentuje aktualny element definiowana jest
+    \emph{wewnątrz} pętli, wewnątrz nawiasów po słowie kluczowym {\tt for}:
+
+    \begin{lstlisting}
+    for (@auto const& each@ : employees) `{
+        pay_salary(each);
+    }`
+    \end{lstlisting}
+
+    {\footnotesize
+    Jeśli pętla ma za zadanie zmodyfikować elementy trzeba użyć zapisu {\tt
+    $T$\&}
+    czyli \emph{referencja~do~$T$}\footnote{referencja to taki wskaźnik, który
+    udaje, że nie jest wskaźnikiem i poprawia komfort życia programisty}.
+
+    Jeśli modyfikowacja elementów jest niepożądana, warto użyć zapisu
+    {\tt $T$ const}, czyli \emph{stała~typu~$T$}. Kompilator nie pozwoli na
+    modyfikację takich wartości.
+
+    Jeśli tworzenie kopii elementów jest kosztowne, a ich modyfikacje
+    niepożądane można połączyć te dwa zapisy w {\tt$T$ const\&}, czyli
+    \emph{referencja~do~stałej~typu~$T$}.
+    }
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Zakres}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Zakres iteracji jest określony przez pewną wartość, podaną po dwukropku:
+
+    \begin{lstlisting}
+    for (auto const& each : @employees@) `{
+        pay_salary(each);
+    }`
+    \end{lstlisting}
+
+    Wartość ta może być zmienną, stałą, a nawet być wynikiem wywołania funkcji.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Instrukcja}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Instrukcja podawana jest w nawiasach klamrowych i wykorzystuje element:
+
+    \begin{lstlisting}
+    `for (auto const& each : employees)` {
+        pay_salary(each);
+    }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    \begin{lstlisting}
+    for
+    \end{lstlisting}
+    \vspace{2.4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    \begin{lstlisting}
+    `for` (auto const& each_element : )
+    \end{lstlisting}
+    \vspace{2.4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    \begin{lstlisting}
+    `for` (`auto const& each_element` : some_value)
+    \end{lstlisting}
+    \vspace{2.4em}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Krok po kroku}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    \begin{lstlisting}
+    `for (auto const& each_element : some_value)` {
+        use_element_to_do_stuff(each_element);
+    }
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Najprostszy przykład z możliwych}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    #include <algorithm>
+    #include <iostream>
+    #include <iterator>
+    #include <string>
+    #include <vector>
+
+    auto main(int argc, char* argv[]) -> int
+    {
+        auto args = std::vector<std::string>{};
+        std::copy_n(argv, argc, std::back_inserter(args));
+
+        for (auto const& each : args) {
+            std::cout << each << "\n";
+        }
+
+        return 0;
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Najprostszy przykład z możliwych}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Ten fragment tworzy
+    \emph{wektor}\footnote{\url{https://en.cppreference.com/w/cpp/container/vector}}
+    z tablicy argumentów, przekazanych funkcji {\tt main()} na wierszu poleceń.
+
+    {\footnotesize
+    \begin{lstlisting}
+    auto args = std::vector<std::string>{};
+    std::copy_n(argv, argc, std::back_inserter(args));
+    \end{lstlisting}}
+
+    Funkcja {\tt std::copy\_n} (kopiująca {\tt argc} elementów z tablicy {\tt
+    argv}) pochodzi z nagłówka {\tt algorithm}, a funkcja {\tt
+    std::back\_inserter} (dodająca elementy do {\tt args}) z nagłówka
+    {\tt iterator}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Najprostszy przykład z możliwych}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Następnie argumenty zebrane w zmiennej {\tt args} wypisywane są po kolei na
+    standardowy strumień wyjścia.
+
+    {\footnotesize
+    \begin{lstlisting}
+    for (auto const& each : args) {
+        std::cout << each << "\n";
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Kalkulator}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Używając pętli \emph{range-based} {\tt for} oraz biblioteki standardowej
+    można szybko napisać własny kalkulator obliczający wyrażenia zapisane w
+    \emph{odwrotnej notacji
+    polskiej}\footnote{\url{https://en.wikipedia.org/wiki/Reverse_Polish_notation}}:
+
+    \begin{lstlisting}
+    make build/04-rpn-calculator.bin
+    ./build/04-rpn-calculator.bin 2 2 + p
+    4
+    \end{lstlisting}
+
+    {\tiny
+    Kod źródłowy kalkulatora znajduje się w repozytorium z szablonem zajęć:
+    \url{https://git.sr.ht/~maelkum/education-introduction-to-programming-cxx/tree/master/src/04-rpn-calculator.cpp}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Kalkulator -- odwrotna notacja polska}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+
+    Odwrotna notacja polska jest notacją \emph{postfiksową} (ang.
+    \emph{postfix}), czyli \emph{operator} występuje po \emph{operandach}:
+    {\tt 2 2 +}\\
+    Typowa, znana ze szkolnej matematyki, notacja z operatorem pomiędzy
+    operandami to notacja infiksowa (ang. \emph{infix}): {\tt 2 + 2}\\
+    Wywołania funkcji są zapisywane w notacji polskiej, prefiksowej (ang.
+    \emph{prefix}) - czyli z operatorem zapisywanym przed operandami: {\tt + 2
+    2}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie}
+    \framesubtitle{Pętla \emph{range-based} {\tt for}}
+    \label{lecture_exercise_6}
+
+    Rozwinąć kalkulator z poprzednich slajdów o funkcje:
+
+    {\footnotesize
+    \begin{enumerate}
+        \item mnożenia, operatorem {\tt *}
+        \item dzielenia, operatorem {\tt /}
+        \item dzielenia liczb całkowitych, operatorem {\tt //} (czyli `{\tt 5 2
+            //}' da 2, a nie 2.5)
+        \item reszty z dzielenia, operatorem {\tt \%}
+        \item potęgowania, operatorem {\tt **}\footnote{operatory zawierające
+            znak * trzeba na wierszu poleceń ''otoczyć'' znakiem apostrofu żeby
+            powłoka nie potraktowała ich jako znaków specjalnych, np. {\tt 2 2
+            '*'}}
+        \item pierwiastka kwadratowego, operatorem {\tt sqrt}
+        \item jednej operacji wymyślonej przez siebie
+    \end{enumerate}}
+
+    Kod źródłowy w pliku {\tt src/s04-rpn-calculator.cpp}
+\end{frame}
+
+\section{Podsumowanie}
+
+\begin{frame}
+    \frametitle{Co nowego?}
+    \frametitle{Podsumowanie}
+
+    Student powinien umieć:
+
+    \begin{enumerate}
+        \item wykorzystać pętle {\tt while}, {\tt do-while}, {\tt for}, oraz
+            \emph{range-based {\tt for}}
+        \item wykorzystać liczby losowe w programie
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadania}
+    \framesubtitle{Podsumowanie}
+
+    Zadania znajdują się na slajdach
+    \ref{lecture_exercise_0},
+    \ref{lecture_exercise_1},
+    \ref{lecture_exercise_2},
+    \ref{lecture_exercise_3},
+    \ref{lecture_exercise_4},
+    \ref{lecture_exercise_5},
+    \ref{lecture_exercise_6}.
+\end{frame}
+
+\end{document}
