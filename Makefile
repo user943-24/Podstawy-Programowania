@@ -30,7 +30,8 @@ all:\
 	build/s01-div.bin \
 	build/s01-hello-me.bin \
 	build/s01-hello-name.bin \
-	build/s03-countdown.bin
+	build/s03-countdown.bin \
+	build/s03-guessing-game.bin
 
 format:
 	@find . -name '*.cpp' | xargs -n 1 --no-run-if-empty --verbose clang-format -i
