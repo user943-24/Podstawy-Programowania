@@ -3,7 +3,6 @@ CXXSTD=c++17
 CXXWARNINGS=\
 		   -Wall \
 		   -Wextra \
-		   -Werror \
 		   -Wpedantic \
 		   -Wfatal-errors
 CXXINCLUDES=\
@@ -30,7 +29,8 @@ all:\
 	build/s01-mul.bin \
 	build/s01-div.bin \
 	build/s01-hello-me.bin \
-	build/s01-hello-name.bin
+	build/s01-hello-name.bin \
+	build/s03-countdown.bin
 
 format:
 	@find . -name '*.cpp' | xargs -n 1 --no-run-if-empty --verbose clang-format -i
