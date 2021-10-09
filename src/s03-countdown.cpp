@@ -16,7 +16,7 @@ auto main(int argc, char *argv[]) -> int {
     }
     std::string arg(argv[1]);
     if(!check_if_number(arg)) {
-        std::cout << "Not a number!\n";
+        std::cout << "Not a number or a negative number!\n";
         return 3;
     }
     int res;
