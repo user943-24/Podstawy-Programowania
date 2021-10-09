@@ -35,12 +35,11 @@ auto main(int argc, char *argv[]) -> int {
 
 auto check_if_number(std::string word) -> bool {
     std::locale loc; // Global locale
-    bool ret_value = true;
     for(auto &c : word) {
         if(!std::isdigit(c, loc))
-            ret_value = false;
+            return false;
     }
-    return ret_value;
+    return true;
 }
 
 auto check_if_number_too_big(std::string number) -> bool {
