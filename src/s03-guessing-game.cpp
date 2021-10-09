@@ -17,7 +17,7 @@ auto main() -> int {
     int number;
     std::stringstream sstream;
     for(;;) {
-        std::stringstream().swap(sstream);
+        sstream.clear();
         std::cout << "guess: ";
         std::getline(std::cin, tmp);
         if(!check_if_number(tmp)) {
