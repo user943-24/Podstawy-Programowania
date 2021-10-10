@@ -12,7 +12,6 @@ auto main(int argc, char *argv[]) -> int {
     }
 
     auto original = 99;
-    auto count = 99;
 
     if(argc == 2) {
         if(!check_if_number(argv[1])) {
@@ -27,14 +26,13 @@ auto main(int argc, char *argv[]) -> int {
             std::cout << "Number too big!\n";
             return 3;
         }
-        count = original;
     }
 
-    for(; count > 1; --count) {
-        std::cout << count << " bottles of beer on the wall,"
-            " " << count << " bottles of beer.\n"
+    for(auto i = original; i > 1; --i) {
+        std::cout << i << " bottles of beer on the wall,"
+            " " << i << " bottles of beer.\n"
             "Take one down, pass it around,"
-            " " << count << " bottles of beer on the wall...\n";
+            " " << i << " bottles of beer on the wall...\n";
     }
     std::cout << "1 bottle of beer on the wall,"
         " 1 bottle of beer.\n"
