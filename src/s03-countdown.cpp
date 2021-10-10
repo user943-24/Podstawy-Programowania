@@ -39,7 +39,7 @@ auto main(int argc, char *argv[]) -> int {
 
 auto check_if_number(std::string word) -> bool {
     std::locale loc; // Global locale
-    for(auto &c : word) {
+    for(auto const &c : word) {
         if(!std::isdigit(c, loc))
             return false;
     }
