@@ -33,7 +33,8 @@ all:\
 	build/s03-countdown.bin \
 	build/s03-guessing-game.bin \
 	build/s03-fizzbuzz.bin \
-	build/s03-echo.bin
+	build/s03-echo.bin \
+	build/s03-beer.bin
 
 format:
 	@find . -name '*.cpp' | xargs -n 1 --no-run-if-empty --verbose clang-format -i
