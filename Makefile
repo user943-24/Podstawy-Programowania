@@ -36,7 +36,8 @@ all:\
 	build/s03-echo.bin \
 	build/s03-beer.bin \
 	build/04-rpn-calculator.bin \
-	build/s03-Student.bin
+	build/s03-Student.bin \
+	build/s03-Time.bin
 
 format:
 	@find . -name '*.cpp' | xargs -n 1 --no-run-if-empty --verbose clang-format -i

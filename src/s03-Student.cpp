@@ -23,7 +23,7 @@ auto s1234::Student::to_string() const -> std::string {
 auto main() -> int {
     auto student = s1234::Student("Jan", "Nowak", "s12345");
     student.average_grade = 3.5;
-    std::cout << student.to_string();
+    std::cout << student.to_string() << "\n";
 
     return 0;
 }
