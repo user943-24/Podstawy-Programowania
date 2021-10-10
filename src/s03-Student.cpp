@@ -10,17 +10,12 @@ s1234::Student::Student(std::string n, std::string sn, std::string in)
 
 auto s1234::Student::to_string() const -> std::string {
     auto result = std::ostringstream{};
-    result << "Name: "
-            << name
-            << "\nLast Name: "
-            << last_name
-            << "\nIndex Number: "
-            << index_number
-            << "\nSemester: "
-            << semester
-            << "\nAverage Grade: "
-            << average_grade
-            << "\n";
+    result << name
+           << " " << last_name
+           << " (" << index_number << "), "
+           << "semestr " << semester << ": "
+           << average_grade;
+
     return result.str();
 }
 
