@@ -34,7 +34,8 @@ all:\
 	build/s03-guessing-game.bin \
 	build/s03-fizzbuzz.bin \
 	build/s03-echo.bin \
-	build/s03-beer.bin
+	build/s03-beer.bin \
+	build/04-rpn-calculator.bin
 
 format:
 	@find . -name '*.cpp' | xargs -n 1 --no-run-if-empty --verbose clang-format -i

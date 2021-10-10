@@ -22,6 +22,7 @@ auto main() -> int {
         std::getline(std::cin, tmp);
         if(!check_if_number(tmp)) {
             std::cout << "not a number or a negative number!\n";
+            return 1;
         } else {
             sstream << tmp;
             sstream >> number;
