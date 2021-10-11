@@ -20,10 +20,9 @@ auto main() -> int {
         sstream.clear();
         std::cout << "guess: ";
         std::getline(std::cin, tmp);
-        if(!check_if_number(tmp)) {
+        if(!check_if_number(tmp))
             std::cout << "not a number or a negative number!\n";
-            return 1;
-        } else {
+        else {
             sstream << tmp;
             sstream >> number;
             if(number > RANDOM_NUMBER)
