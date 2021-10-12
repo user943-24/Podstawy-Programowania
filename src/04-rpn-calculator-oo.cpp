@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <locale>
 
 
 static auto pop_top(std::stack<double>& stack) -> double {
@@ -22,6 +23,22 @@ static auto pop_top(std::stack<double>& stack) -> double {
     auto element = std::move(stack.top());
     stack.pop();
     return element;
+}
+
+static auto check_if_double(std::string word) -> bool {
+    if(word[0] == '.')
+        return false;
+    std::locale loc; // Global locale
+    bool dot = false;
+    for(auto const &c : word) {
+        if(!std::isdigit(c, loc)) {
+            if(!dot)
+                dot = true;
+            else
+                return false;
+        }
+    }
+    return true;
 }
 
 
@@ -146,7 +163,6 @@ auto make_args(int argc, char* argv[], bool const with_exec = false)
 auto main(int argc, char* argv[]) -> int {
     using student::rpn_calculator::Calculator;
     auto calculator = Calculator{};
-    bool printed = false;
 
     for (auto const& each : make_args(argc, argv)) {
         try {
@@ -164,7 +180,6 @@ auto main(int argc, char* argv[]) -> int {
 
             if (each == "p") {
                 calculator.push(std::make_unique<Print>());
-                printed = true;
             } else if (each == "+") {
                 calculator.push(std::make_unique<Addition>());
             } else if (each == "-") {
@@ -183,15 +198,19 @@ auto main(int argc, char* argv[]) -> int {
                 calculator.push(std::make_unique<Sqrt>());
             } else if (each == "log10") {
                 calculator.push(std::make_unique<Log10>());
-            } else {
+            } else if (check_if_double(each)) {
                 calculator.push(std::make_unique<Literal>(std::stod(each)));
+            } else {
+                throw std::logic_error{"unknown expression"};
+                break;
             }
         } catch (std::logic_error const& e) {
-            std::cerr << "error: " << each << ": " << e.what() << "\n";
+            std::cerr << "error: '" << each << "' : " << e.what() << "\n";
+            return 1;
         }
     }
 
-    if(!printed)
+    if(std::string(argv[argc-1]) != "p")
         calculator.push(std::make_unique<student::rpn_calculator::Print>());
 
     try {

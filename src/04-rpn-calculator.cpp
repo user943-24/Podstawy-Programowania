@@ -29,13 +29,11 @@ auto main(int argc, char* argv[]) -> int {
     auto stack = std::stack<double>{};
     std::stringstream sstream;
     double tmp;
-    bool wrote = false;
 
     for (auto each : args) {
         try {
             if (each == "p") {
                 std::cout << pop_top(stack) << "\n";
-                wrote = true;
             } else if (each == "+") {
                 evaluate_addition(stack);
             } else if (each == "-") {
@@ -67,7 +65,7 @@ auto main(int argc, char* argv[]) -> int {
             return 1;
         }
     }
-    if(!wrote)
+    if(std::string(argv[argc-1]) != "p")
         std::cout << pop_top(stack) << "\n";
 
     return 0;
