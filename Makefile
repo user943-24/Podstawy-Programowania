@@ -3,6 +3,7 @@ CXXSTD=c++17
 CXXWARNINGS=\
 		   -Wall \
 		   -Wextra \
+		   -Werror \
 		   -Wpedantic \
 		   -Wfatal-errors
 CXXINCLUDES=\
