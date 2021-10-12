@@ -1,4 +1,5 @@
 #include "../include/s1234/Time.h"
+#include <cstdint>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -77,6 +78,38 @@ auto s1234::Time::time_of_day() const -> Time_of_day {
         return s1234::Time::night;
 }
 
+auto s1234::Time::count_seconds() const -> std::uint64_t {
+    std::uint64_t count = 0;
+    count += hour * 60 * 60;
+    count += minute * 60;
+    count += second;
+    return count;
+}
+
+auto s1234::Time::count_minutes() const -> std::uint64_t {
+    std::uint64_t count = 0;
+    count += hour * 60;
+    count += minute;
+    return count;
+}
+
+auto s1234::Time::time_to_midnight() const -> Time {
+    Time time;
+    time.second = 60 - second;
+
+    if(time.second > 0)
+        time.minute = 59 - minute;
+    else
+        time.minute = 60 - minute;
+
+    if(time.minute > 0)
+        time.hour = 23 - hour;
+    else
+        time.minute = 24 - hour;
+
+    return time;
+}
+
 auto main() -> int {
     auto time = s1234::Time(23, 59, 59);
 
@@ -87,6 +120,10 @@ auto main() -> int {
     std::cout << time.to_string() << "\n";
 
     std::cout << time.to_string(time.time_of_day()) << "\n";
+
+    std::cout << "seconds: " << time.count_seconds() << "\n";
+    std::cout << "minutes: " << time.count_minutes() << "\n";
+    std::cout << "time to midnight: " << time.time_to_midnight().to_string() << "\n";
 
     return 0;
 }

@@ -1,6 +1,7 @@
 #ifndef S1234_TIME_H
 #define S1234_TIME_H
 
+#include <cstdint>
 #include <string>
 
 namespace s1234 {
@@ -25,6 +26,9 @@ struct Time {
     auto to_string() const -> std::string;
     auto to_string(Time_of_day) const -> std::string;
     auto time_of_day() const -> Time_of_day;
+    auto count_seconds() const -> std::uint64_t;
+    auto count_minutes() const -> std::uint64_t;
+    auto time_to_midnight() const -> Time;
 };
 
 }
