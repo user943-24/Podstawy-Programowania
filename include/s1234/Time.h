@@ -9,6 +9,12 @@ struct Time {
     unsigned short hour = 0;
     unsigned short minute = 0;
     unsigned short second = 0;
+    enum Time_of_day {
+        morning,
+        afternoon,
+        evening,
+        night,
+    };
 
     Time() = default;
     Time(unsigned short, unsigned short, unsigned short);
@@ -17,6 +23,8 @@ struct Time {
     auto next_minute() -> void;
     auto next_second() -> void;
     auto to_string() const -> std::string;
+    auto to_string(Time_of_day) const -> std::string;
+    auto time_of_day() const -> Time_of_day;
 };
 
 }

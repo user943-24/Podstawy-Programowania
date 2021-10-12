@@ -51,6 +51,32 @@ auto s1234::Time::to_string() const -> std::string {
     return out.str();
 }
 
+auto s1234::Time::to_string(s1234::Time::Time_of_day tod) const -> std::string {
+    switch(tod) {
+        case morning:
+            return "morning";
+        case afternoon:
+            return "afternoon";
+        case  evening:
+            return "evening";
+        case night:
+            return "night";
+        default:
+            throw "Something's wrong!";
+    };
+}
+
+auto s1234::Time::time_of_day() const -> Time_of_day {
+    if(hour >= 6 && hour <= 11)
+        return s1234::Time::morning;
+    else if(hour >= 12 && hour <= 16)
+        return s1234::Time::afternoon;
+    else if(hour >= 17 && hour <= 20)
+        return s1234::Time::evening;
+    else
+        return s1234::Time::night;
+}
+
 auto main() -> int {
     auto time = s1234::Time(23, 59, 59);
 
@@ -59,6 +85,8 @@ auto main() -> int {
     time.next_minute();
 
     std::cout << time.to_string() << "\n";
+
+    std::cout << time.to_string(time.time_of_day()) << "\n";
 
     return 0;
 }

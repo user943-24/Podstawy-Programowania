@@ -1,7 +1,6 @@
 /*
  * A reverse-polish notation calculator.
  */
-
 #include <algorithm>
 #include <cmath>
 #include <iostream>
