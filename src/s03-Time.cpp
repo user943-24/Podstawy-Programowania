@@ -4,110 +4,112 @@
 #include <string>
 #include <sstream>
 
-s1234::Time::Time(unsigned short h, unsigned short m, unsigned short s) :
-    hour{std::move(h)}, minute{std::move(m)}, second{std::move(s)} {}
+namespace s1234 {
+    Time::Time(unsigned short h, unsigned short m, unsigned short s) :
+        hour{std::move(h)}, minute{std::move(m)}, second{std::move(s)} {}
 
-auto s1234::Time::next_hour() -> void {
-    if(hour == 23)
-        hour = 0;
-    else
-        hour++;
-}
-
-auto s1234::Time::next_minute() -> void {
-    if(minute == 59) {
-        minute = 0;
-        next_hour();
-    } else
-        minute++;
-}
-
-auto s1234::Time::next_second() -> void {
-    if(second == 59) {
-        second = 0;
-        next_minute();
-    } else {
-        second++;
+    auto Time::next_hour() -> void {
+        if(hour == 23)
+            hour = 0;
+        else
+            hour++;
     }
-}
 
-auto s1234::Time::to_string() const -> std::string {
-    auto out = std::ostringstream{};
+    auto Time::next_minute() -> void {
+        if(minute == 59) {
+            minute = 0;
+            next_hour();
+        } else
+            minute++;
+    }
 
-    if(hour < 10)
-        out << "0" << hour << ":";
-    else
-        out << hour << ":";
+    auto Time::next_second() -> void {
+        if(second == 59) {
+            second = 0;
+            next_minute();
+        } else {
+            second++;
+        }
+    }
 
-    if(minute < 10)
-        out << "0" << minute << ":";
-    else
-        out << minute << ":";
+    auto Time::to_string() const -> std::string {
+        auto out = std::ostringstream{};
 
-    if(second < 10)
-        out << "0" << second;
-    else
-        out << second;
+        if(hour < 10)
+            out << "0" << hour << ":";
+        else
+            out << hour << ":";
 
-    return out.str();
-}
+        if(minute < 10)
+            out << "0" << minute << ":";
+        else
+            out << minute << ":";
 
-auto s1234::Time::to_string(s1234::Time::Time_of_day tod) const -> std::string {
-    switch(tod) {
-        case morning:
-            return "morning";
-        case afternoon:
-            return "afternoon";
-        case  evening:
-            return "evening";
-        case night:
-            return "night";
-        default:
-            throw "Something's wrong!";
-    };
-}
+        if(second < 10)
+            out << "0" << second;
+        else
+            out << second;
 
-auto s1234::Time::time_of_day() const -> Time_of_day {
-    if(hour >= 6 && hour <= 11)
-        return s1234::Time::morning;
-    else if(hour >= 12 && hour <= 16)
-        return s1234::Time::afternoon;
-    else if(hour >= 17 && hour <= 20)
-        return s1234::Time::evening;
-    else
-        return s1234::Time::night;
-}
+        return out.str();
+    }
 
-auto s1234::Time::count_seconds() const -> std::uint64_t {
-    std::uint64_t count = 0;
-    count += hour * 60 * 60;
-    count += minute * 60;
-    count += second;
-    return count;
-}
+    auto Time::to_string(Time::Time_of_day tod) const -> std::string {
+        switch(tod) {
+            case morning:
+                return "morning";
+            case afternoon:
+                return "afternoon";
+            case  evening:
+                return "evening";
+            case night:
+                return "night";
+            default:
+                throw "Something's wrong!";
+        };
+    }
 
-auto s1234::Time::count_minutes() const -> std::uint64_t {
-    std::uint64_t count = 0;
-    count += hour * 60;
-    count += minute;
-    return count;
-}
+    auto Time::time_of_day() const -> Time_of_day {
+        if(hour >= 6 && hour <= 11)
+            return Time::morning;
+        else if(hour >= 12 && hour <= 16)
+            return Time::afternoon;
+        else if(hour >= 17 && hour <= 20)
+            return Time::evening;
+        else
+            return Time::night;
+    }
 
-auto s1234::Time::time_to_midnight() const -> Time {
-    Time time;
-    time.second = 60 - second;
+    auto Time::count_seconds() const -> std::uint64_t {
+        std::uint64_t count = 0;
+        count += hour * 60 * 60;
+        count += minute * 60;
+        count += second;
+        return count;
+    }
 
-    if(time.second > 0)
-        time.minute = 59 - minute;
-    else
-        time.minute = 60 - minute;
+    auto Time::count_minutes() const -> std::uint64_t {
+        std::uint64_t count = 0;
+        count += hour * 60;
+        count += minute;
+        return count;
+    }
 
-    if(time.minute > 0)
-        time.hour = 23 - hour;
-    else
-        time.minute = 24 - hour;
+    auto Time::time_to_midnight() const -> Time {
+        Time time;
+        time.second = 60 - second;
 
-    return time;
+        if(time.second > 0)
+            time.minute = 59 - minute;
+        else
+            time.minute = 60 - minute;
+
+        if(time.minute > 0)
+            time.hour = 23 - hour;
+        else
+            time.minute = 24 - hour;
+
+        return time;
+    }
 }
 
 auto main() -> int {

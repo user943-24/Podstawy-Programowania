@@ -2,7 +2,7 @@
  * A reverse-polish notation calculator.
  */
 
-#include <RPN_calculator.h>
+#include "../include/RPN_calculator.h"
 
 #include <algorithm>
 #include <iostream>
@@ -25,50 +25,50 @@ static auto pop_top(std::stack<double>& stack) -> double
 
 
 namespace student { namespace rpn_calculator {
-Element::~Element()
-{}
+    Element::~Element()
+    {}
 
-Literal::Literal(double const v) : value{v}
-{}
-auto Literal::evaluate(stack_type& stack) const -> void
-{
-    stack.push(value);
-}
-
-auto Print::evaluate(stack_type& stack) const -> void
-{
-    std::cout << stack.top() << "\n";
-}
-
-auto Addition::evaluate(stack_type& stack) const -> void
-{
-    if (stack.size() < 2) {
-        throw std::logic_error{"not enough operands for +"};
+    Literal::Literal(double const v) : value{v}
+    {}
+    auto Literal::evaluate(stack_type& stack) const -> void
+    {
+        stack.push(value);
     }
-    auto const b = pop_top(stack);
-    auto const a = pop_top(stack);
-    stack.push(a + b);
-}
 
-Calculator::Calculator(stack_type s) : stack{std::move(s)}
-{}
-
-auto Calculator::push(std::unique_ptr<Element> op) -> void
-{
-    ops.push(std::move(op));
-}
-
-// FIXME implement Calculator::push(std::string)
-
-auto Calculator::evaluate() -> void
-{
-    while (not ops.empty()) {
-        auto op = std::move(ops.front());
-        ops.pop();
-
-        op->evaluate(stack);
+    auto Print::evaluate(stack_type& stack) const -> void
+    {
+        std::cout << stack.top() << "\n";
     }
-}
+
+    auto Addition::evaluate(stack_type& stack) const -> void
+    {
+        if (stack.size() < 2) {
+            throw std::logic_error{"not enough operands for +"};
+        }
+        auto const b = pop_top(stack);
+        auto const a = pop_top(stack);
+        stack.push(a + b);
+    }
+
+    Calculator::Calculator(stack_type s) : stack{std::move(s)}
+    {}
+
+    auto Calculator::push(std::unique_ptr<Element> op) -> void
+    {
+        ops.push(std::move(op));
+    }
+
+    // FIXME implement Calculator::push(std::string)
+
+    auto Calculator::evaluate() -> void
+    {
+        while (not ops.empty()) {
+            auto op = std::move(ops.front());
+            ops.pop();
+
+            op->evaluate(stack);
+        }
+    }
 }}  // namespace student::rpn_calculator
 
 
