@@ -6,7 +6,6 @@
 #include <iostream>
 #include <iterator>
 #include <stack>
-#include <stdexcept>
 #include <string>
 #include <vector>
 #include <locale>
