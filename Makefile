@@ -42,7 +42,8 @@ all:\
 	build/s03-password.bin \
 	build/04-rpn-calculator-oo.bin \
 	build/s05-print-thread.bin \
-	build/s05-print-thread-group.bin
+	build/s05-print-thread-group.bin \
+	build/s05-job-queue.bin
 
 
 format:
