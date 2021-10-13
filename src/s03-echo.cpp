@@ -43,11 +43,10 @@ auto main(int argc, char *argv[]) -> int {
     tmp.append("\n");
     contents.push_back(tmp);
 
-
     auto i = contents.size();
 
     if(options.l) {
-        auto i = 0;
+        i = 0;
         for(it=contents.begin(); i < contents.size()-1; ++it) {
             (*it).replace((*it).length()-1, 1, "\n");
             ++i;
