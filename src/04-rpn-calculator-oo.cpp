@@ -46,6 +46,7 @@ namespace student { namespace rpn_calculator {
     Element::~Element() {}
 
     Literal::Literal(double const v) : value{v} {}
+
     auto Literal::evaluate(stack_type& stack) const -> void {
         stack.push(value);
     }
