@@ -46,7 +46,8 @@ all:\
 	build/s05-job-queue.bin \
 	build/s05-sleeping-threads.bin \
 	build/s05-sleeping-threads-2.bin \
-	build/s05-sleeping-threads-3.bin
+	build/s05-sleeping-threads-3.bin \
+	build/s05-ping-pong.bin
 
 
 format:

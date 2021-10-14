@@ -28,10 +28,13 @@ auto main() -> int {
         threads[i].detach();
     }
 
+    using namespace std::chrono_literals;
     do {
         std::getline(std::cin, tmp);
         texts.push(tmp);
         cv.notify_all();
+        //short sleep to give time for threads do decrement existing_threads
+        std::this_thread::sleep_for(100ms);
     } while(existing_threads > 0);
 
     return 0;
