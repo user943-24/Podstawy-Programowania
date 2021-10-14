@@ -35,13 +35,11 @@ auto main() -> int {
 }
 
 auto get_from_queue(unsigned short id, std::queue<std::string>& texts) -> void {
-    std::unique_lock<std::mutex> lck(mtx, std::defer_lock);
-
     using namespace std::chrono;
 
     for(;;) {
+        mtx.lock();
         if(texts.front() != "" && !texts.empty()) {
-            mtx.lock();
             std::cout << id << ": " << texts.front() << "\n";
             texts.pop();
             mtx.unlock();
@@ -51,8 +49,10 @@ auto get_from_queue(unsigned short id, std::queue<std::string>& texts) -> void {
             auto random_number = distribution(engine);
             std::this_thread::sleep_for(std::chrono::milliseconds(random_number));
         } else {
+            texts.pop();
             std::cout << "thread " << id << " exiting\n";
             existing_threads--;
+            mtx.unlock();
             return;
         }
     }
