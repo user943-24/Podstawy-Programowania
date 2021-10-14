@@ -44,7 +44,9 @@ all:\
 	build/s05-print-thread.bin \
 	build/s05-print-thread-group.bin \
 	build/s05-job-queue.bin \
-	build/s05-sleeping-threads.bin
+	build/s05-sleeping-threads.bin \
+	build/s05-sleeping-threads-2.bin \
+	build/s05-sleeping-threads-3.bin
 
 
 format:
