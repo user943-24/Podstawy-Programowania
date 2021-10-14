@@ -20,6 +20,7 @@ auto existing_threads = threads.size();
 auto get_from_queue(unsigned short, std::queue<std::string>&) -> void;
 
 auto main() -> int {
+    engine.seed(std::random_device{}());
     auto texts = std::queue<std::string>{};
     auto tmp = std::string{};
 
@@ -52,7 +53,6 @@ auto get_from_queue(unsigned short id, std::queue<std::string>& texts) -> void {
             lck.unlock();
         } else if(texts.empty()) {
             lck.unlock();
-            engine.seed(std::random_device{}());
             auto random_number = distribution(engine);
             std::this_thread::sleep_for(std::chrono::milliseconds(random_number));
         } else {

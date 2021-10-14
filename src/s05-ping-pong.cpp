@@ -17,6 +17,7 @@ std::uniform_int_distribution<int> distribution(1, 42);
 auto refuse(std::string, unsigned&) -> void;
 
 auto main() -> int {
+    engine.seed(std::random_device{}());
     unsigned number = 0;
     auto ping = std::pair<std::thread, std::string>{};
     auto pong = std::pair<std::thread, std::string>{};
@@ -56,7 +57,6 @@ auto refuse(std::string id, unsigned& number) -> void {
             return;
         }
 
-        engine.seed(std::random_device{}());
         number += distribution(engine);
         std::cout << id << " " << number << "\n";
 
