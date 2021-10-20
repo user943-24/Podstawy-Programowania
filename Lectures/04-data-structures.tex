@@ -54,46 +54,263 @@ moredelim=**[is][\color{olive}]{$}{$}}
     reprezentujących zestaw \emph{danych} i \emph{operacji} na tych danych,
     których przechowywanie osobno nie miałoby większego sensu.
 
-    \vspace{1em}
+    % \vspace{1em}
 
-    Biblioteka standardowa zawiera strukturę danych {\tt std::vector}, która
-    reprezentuje tablicę o zmiennej długości. Grupuje ona \emph{dane} (zawartość
-    i rozmiar), oraz \emph{operacje} (np. dodawanie, usuwanie i dostęp do
-    elementów).
+    % Biblioteka standardowa zawiera strukturę danych {\tt std::vector}, która
+    % reprezentuje tablicę o zmiennej długości. Grupuje ona \emph{dane} (zawartość
+    % i rozmiar tablicy), oraz \emph{operacje} (np.~dodawanie, usuwanie i dostęp do
+    % elementów).
 \end{frame}
 
 \begin{frame}[fragile]
-    \frametitle{Składniki}
+    \frametitle{Wyliczenia}
     \framesubtitle{Struktury danych}
+
+    Pierwszym rodzajem struktur danych w C++ są typy wliczeniowe.\\
+    Są ich dwa rodzaje -- silne (\texttt{enum class}) i słabe (\texttt{enum}):
+
+    {\scriptsize
+    \begin{lstlisting}
+    enum class Strong {
+        CONAN_THE_BARBARIAN,
+        JOHN_CARTER_OF_MARS,
+    };
+
+    enum Weak {
+        KOBOLD,
+        GNOLL,
+    };
+    \end{lstlisting}}
+
+    Wyliczenia silne definiują nowy typ danych i pozwalają jedynie na
+    porównywanie wartości.
+    Słabe są \emph{de facto} wartościami typu \texttt{int} w przebraniu, i
+    pozwalają na wszystko na co pozwala \texttt{int} (w tym automatyczne
+    konwersje między wartościami typu \texttt{int} i słabymi wyliczeniami).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Struktury}
+    \framesubtitle{Struktury danych}
+
+    Drugim rodzajem struktur danych w C++ są struktury.
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Player_character {
+        std::string name;
+        short int   proficiency_bonus;
+        int         hit_points;
+        short int   hit_dice;
+    };
+    \end{lstlisting}}
+
+    Definiują one nowy typ danych i pozwalają na definiowanie dla nich dowolnych
+    operacji.
+\end{frame}
+
+\subsection{Wyliczenie}
+
+\begin{frame}
+    \frametitle{Składniki}
+    \framesubtitle{Wyliczenia}
+
+    Wyliczenia jawnie definiują wartości jakie mogą przybrać.
+
+    Silny typ wyliczeniowy reprezentuje logiczną sumę (alternatywę, \emph{albo}) wszystkich
+    swoich wartości: wartość A \emph{albo} wartość B, nigdy obie naraz.
+
+    Słaby typ wyliczeniowy to nieco bardziej śliski temat, i może ``mieszać''
+    deklarowane przez siebie wartości -- jest w stanie reprezentować wartość,
+    która nie jest jawnie wyliczona.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Silne wyliczenia}
+    \framesubtitle{Wyliczenia}
+
+    Przydatne do zdefiniowania dyskretnych, ``niemieszalnych'' wartości:
+
+    {\scriptsize
+    \begin{lstlisting}
+    enum class Emotion {
+        ANGER,
+        FRUSTRATION,
+        FEAR,
+        JOY,
+        HOPE,
+    };
+
+    auto es = std::set<Emotion>{ Emotion::FEAR, Emotion::HOPE };
+    \end{lstlisting}}
+
+    Jeśli zmienna powinna być w stanie reprezentować kilka takich wartości naraz
+    można użyć \texttt{std::set} (z nagłówka \texttt{<set>}) do ich przechowania.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Słabe wyliczenia}
+    \framesubtitle{Wyliczenia}
+
+    Przydatne do zdefiniowania ``mieszalnych'' wartości lub flag:
+
+    {\scriptsize
+    \begin{lstlisting}
+    enum Emotion {
+        ANGER       = (1 << 0),
+        FRUSTRATION = (1 << 1),
+        FEAR        = (1 << 2),
+        JOY         = (1 << 3),
+        HOPE        = (1 << 4),
+    };
+
+    auto ew = FEAR | HOPE;
+    \end{lstlisting}}
+
+    Mieszanie wartości można osiągnąć za pomocą operatora sumy
+    bitowej\footnote{ale wtedy sztuczka z przesunięciami bitowymi (ang.
+    \emph{bit shift}) jest konieczna, bo każde pole musi mieć zapalony inny bit}
+    czyli \texttt{|} (tzw. \emph{pipe}).
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Wyliczenia silne \emph{vs} słabe}
+    \framesubtitle{Wyliczenia}
+
+    Reprezentacja kilku wartości naraz:
+
+    {\scriptsize
+    \begin{lstlisting}
+    $// enumeration, strong$
+    auto es = std::set<Emotion>{ Emotion::FEAR, Emotion::HOPE };
+
+    $// add new value to the mix$
+    es.insert(Emotion::ANGER);
+    \end{lstlisting}}
+
+    vs
+
+    {\scriptsize
+    \begin{lstlisting}
+    $// enumeration, weak$
+    auto ew = FEAR | HOPE;
+
+    $// add new value to the mix$
+    ew |= ANGER;
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Wyliczenia silne \emph{vs} słabe}
+    \framesubtitle{Wyliczenia}
+
+    Sprawdzenie czy zmienna zawiera daną wartość:
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto es = std::set<Emotion>{ Emotion::FEAR, Emotion::HOPE };
+
+    if (es.count(Emotion::ANGER)) { $/* ... */$ }
+    \end{lstlisting}}
+
+    vs
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto ew = FEAR | HOPE;
+
+    if (ew & ANGER) { $/* ... */$ }
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Wyliczenia silne \emph{vs} słabe}
+    \framesubtitle{Wyliczenia}
+
+    Usunięcie wartości ze zmiennej:
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto es = std::set<Emotion>{ Emotion::FEAR, Emotion::HOPE };
+
+    es.erase(Emotion::FEAR);
+    \end{lstlisting}}
+
+    vs
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto ew = FEAR | HOPE;
+
+    ew = (ew ^ FEAR);
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Wyliczenia silne \emph{vs} słabe}
+    \framesubtitle{Wyliczenia}
+
+    Wyliczenia silne i słabe pozwalają na osiągnięcie tego samego celu, ale na
+    różne sposoby.
+
+    \vspace{1em}
+
+    Zaletą wyliczeń silnych jest to, że definiują nowy typ danych więc nie ma
+    szans na przypadkową automatyczną konwersję, która sprawi, że w programie
+    pojawi się ``niewyliczona'' wartość.
+\end{frame}
+
+\subsection{Struktura}
+
+\begin{frame}[fragile]
+    \frametitle{Składniki (1)}
+    \framesubtitle{Struktury}
 
     Struktury (typy) danych składają się przede wszystkim z \textbf{pól} (ang.
     \emph{fields} lub \emph{member variables}), czasem zwanych zmiennymi lub
-    stałymi składowymi, i \textbf{funkcji składowych} (ang. \emph{member
-    functions}).
+    stałymi składowymi.
+
+    Typ strukturalny reprezentuje logiczny iloczyn (koniunkcję, \emph{i})
+    wartości reprezentowalnych przez typy swoich pól: wartość A \emph{i} wartość
+    B.
+
+    \vspace{1em}
+
+    Struktury mogą też zawierać \textbf{funkcje składowe} (ang. \emph{member
+    functions} lub \emph{methods}) czasem zwanych metodami.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Składniki (2)}
+    \framesubtitle{Struktury}
+    \label{struct_cat_example_full}
 
     {\scriptsize
     \begin{lstlisting}
     struct Cat {
-        size_t number_of_lives { 1 };     $// member variable (field)$
+        size_t number_of_lives { 9 };     $// member variable (field)$
         bool const brings_luck { false }; $// member constant (field)$
 
-        auto make_sound() const -> void;  $// member function$
+        auto make_sound(bool const) const -> void;  $// member function$
     };
 
-    auto Cat::make_sound() const -> void
+    auto Cat::make_sound(bool const loud) const -> void
     {
-        std::cout << "Meow! I have "
-            << number_of_lives << " lives left.\n";
+        std::cout << (loud ? "MEOW!!!" : "Meow!")
+            << " I have " << number_of_lives << " lives left, and I "
+            << (brings_luck ? "do" : "don't") << " bring luck.\n";
     }
     \end{lstlisting}}
 \end{frame}
 
 \begin{frame}[fragile]
     \frametitle{Pola}
-    \framesubtitle{Struktury danych}
+    \framesubtitle{Struktury}
 
-    Pola służą do przechowywania \emph{danych}, które dany typ grupuje. Na
-    przykład rozmiar i zawartość wektora.
+    Pola służą do przechowywania \emph{danych}, które dany typ grupuje -- na
+    przykład rozmiar i zawartość wektora w \texttt{std::vector}.
+
+    \vspace{1em}
 
     Pola mogą być zmienne - jeśli ich wartości mogą podlegać modyfikacji w
     trakcie życia obiektu danego typu (np. rozmiar {\tt std::vector}), albo
@@ -106,42 +323,61 @@ moredelim=**[is][\color{olive}]{$}{$}}
 
     {\scriptsize
     \begin{lstlisting}
-    size_t number_of_lives { 1 };
+    size_t number_of_lives { 9 };
     \end{lstlisting}}
 \end{frame}
 
 \begin{frame}
     \frametitle{Funkcje składowe}
-    \framesubtitle{Struktury danych}
+    \framesubtitle{Struktury}
 
     Funkcje składowe służą do wykonywania \emph{operacji} na danych zgrupowanych
-    przez dany typ (np. {\tt std::vector::push\_back}), lub do ogólnej
+    przez dany typ (np. {\tt std::vector::push\_back}), lub ogólnej
     interakcji z nim (np. {\tt Cat::make\_sound}).
+
+    \vspace{1em}
+
+    Funkcja składowa ma dostęp zarówno do wartości przekazanych jej w
+    argumentach, jak i do wartości pól obiektu, na którym jest wywoływana (patrz
+    przykład kodu na slajdzie \pageref{struct_cat_example_full}).
+
+    \vspace{1em}
+
+    Funkcje składowe mogą też pełnić specjalną rolę, np. konstruktor lub
+    przeładowany operator (patrz slajdy \pageref{ctor_example} i
+    \pageref{overloaded_operator_example}).
 \end{frame}
 
 \begin{frame}[fragile]
     \frametitle{{\tt class} vs {\tt struct}}
-    \framesubtitle{Struktury danych}
+    \framesubtitle{Struktury}
 
-    Jedyna różnica to domyślna \emph{widoczność} pól i funkcji składowych. Pola
-    klas ({\tt class}) są prywatne, a struktur ({\tt struct}) publiczne.
-    Widoczność można zmieniać słowami kluczowymi {\tt private} i {\tt public}.
+    \emph{Jedyna} różnica między strukturami (\texttt{struct}), a klasami
+    (\texttt{class}) to domyślna \emph{widoczność} pól i funkcji składowych.
+    Pola klas są prywatne, a struktur publiczne.
+    Widoczność można zmieniać słowami kluczowymi {\tt private} i {\tt public}:
 
     {\scriptsize
     \begin{lstlisting}
-    class Foo {
-        @public@:
+    struct S {
         bool now_you_see_me { true };
 
-        @private@:
+    @private@:
         bool now_you_dont { false };
+    };
+
+    class C {
+        bool you_dont_see_me { false };
+
+    @public@:
+        bool now_you_do { true };
     };
     \end{lstlisting}}
 \end{frame}
 
 \begin{frame}[fragile]
     \frametitle{Widoczność pól}
-    \framesubtitle{Struktury danych}
+    \framesubtitle{Struktury}
 
     Po co jest widoczność? Niektóre pola w strukturze mogą nie być przeznaczone
     dla ''użytkowników'' lub wymagać zachowania pewnych warunków. Jeśli jest
@@ -151,7 +387,7 @@ moredelim=**[is][\color{olive}]{$}{$}}
     \begin{lstlisting}
     class Hour {
         unsigned value { 0 };  $// private by default$
-        public:
+    public:
         auto what_time_is_it() const -> unsigned;
         auto increase_time() -> void;
     };
@@ -169,44 +405,280 @@ moredelim=**[is][\color{olive}]{$}{$}}
     \end{lstlisting}}
 \end{frame}
 
+\section{Pola}
+
 \begin{frame}[fragile]
-    \frametitle{Konstruktor}
-    \framesubtitle{Struktury danych}
+    \frametitle{Zmienne}
+    \framesubtitle{Pola}
 
-    Konstruktor (ang. \textit{constructor}) jest specjalną funkcją składową
-    odpowiedzialną za ''przygotowanie'' struktury danych do użycia. Konstruktor
-    może zasygnalizować niemożność utworzenia instancji struktury (np. z powodu
-    niewłaściwych wartości argumentów) używając wyjątków\footnote{ponieważ
-    konstruktor jako takie nie zwraca wartości więc nie ma jak inaczej
-    zasygnalizować błędu}.
+    Definicja zmiennego pola wygląda tak jak definicja każdej innej zmiennej, z
+    tym wyjątkiem, że trzeba użyć starego stylu deklaracji (tj. bez
+    \texttt{auto}).
 
-    {\tiny
+    Załóżmy, że chcemy stworzyć strukturę opisującą kota. Jak wiadomo, koty mają
+    9 żyć do wykorzystania:
+
+    {\small
     \begin{lstlisting}
-    class Hour {
-        $// code from last slide here...$
-        public:
-        Hour(unsigned);
+    struct Cat {
+        static constexpr unsigned MAX_LIVES = 9;
+        unsigned lives_left     { MAX_LIVES };
     };
-    Hour::Hour(unsigned @v@)
-        : value{v} $// initialise the field using values from parameters$
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Stałe}
+    \framesubtitle{Pola stałe (stałe składowe)}
+
+    Definicja stałego pola wygląda podobnie do definicji zmiennego pola. Trzeba
+    dodać jedynie słowo kluczowe \texttt{const}. Kontynuując przykład z kotem:
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Cat {
+        static constexpr unsigned MAX_LIVES = 9;
+        unsigned lives_left { MAX_LIVES };
+
+        std::string @const@ name;
+    };
+    \end{lstlisting}}
+
+    Wartości pół stałych nie można\footnote{Oh, rly? Ciekawostka na slajdzie
+    \pageref{hackerman_const_field_mutation}.} zmienić, nawet w ciele
+    konstruktora. Do ich inicjalizacji służy specjalna notacja (patrz następny
+    slajd).
+\end{frame}
+
+\begin{frame}
+    \frametitle{Inicjalizacja pól}
+    \framesubtitle{Pola}
+
+    Pola można zainicjalizować na kilka sposobów:
+    \begin{enumerate}
+        \item przypisując im wartość w liście inicjalizującej składowe (ang.
+            \emph{member initialiser list}) (patrz slajd
+            \pageref{ctor_field_init_example})
+        \item przypisując im wartość w ciele konstruktora
+        \item pozostawiając ich wartości domyślne zdefiniowane w ciele struktury
+    \end{enumerate}
+
+    \vspace{1em}
+
+    Zmienne składowe można zainicjalizować na każdy z powyższych sposobów.
+
+    Stałe składowe można zainicjalizować jedynie w sposób 1. lub 3.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Inicjalizacja pól (c.d.)}
+    \framesubtitle{Pola}
+    \label{ctor_field_init_example}
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Cat {
+        $/* fields of Cat omitted */$
+
+        Cat() = default; $// default ctor$
+        Cat(std::string, unsigned const);
+    };
+
+    Cat::Cat(std::string n, unsigned const ll)
+        : name{n}        $// only member initialiser list for constants$
+        , lives_left{ll} $// for variables you can use member initialiser list...$
     {
-        @if@ (@v > 23@) { $// throw if they don't make sense$
-            @throw@ std::out_of_range{"hour value cannot exceed 23"};
-        }
+        lives_left = ll; $//...or assignment in constructor's body$
+    }
+    \end{lstlisting}}
+
+    Jeśli definiujemy konstruktor to kompilator nie wygeneruje konstruktora
+    domyślnego (z pustą listą parametrów).
+
+    Domyślny konstrukor można w takim wypadku zdefiniować ręcznie, lub wymusić
+    jego automatyczne utworzenie za pomocą konstrukcji ``\texttt{=~default}''.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Dostęp}
+    \framesubtitle{Pola}
+
+    Aby dostać się do pola struktury należy użyć operatora dostępu czyli {\tt .}
+    (kropka).
+
+    Jeśli pole jest zmienne, można je zmodyfikować lub przypisać mu całkiem nową
+    wartość:
+
+    {\small
+    \begin{lstlisting}
+    auto a_cat = Cat{};      $// an ordinary cat$
+    a_cat@.@lives_left @-=@ 1;   $// the cat died and lost a life$
+    a_cat@.@lives_left  @=@ 666; $// now it's a cat from hell$
+    \end{lstlisting}}
+
+    Stałych pól nie można modyfikować, a kompilator w takim przypadku wygeneruje
+    błąd:
+
+    {\small
+    \begin{lstlisting}
+    auto mr_snuggles = Cat{ 9, "Mr. Snuggles" };
+    std::cout << mr_snuggles@.@name << "\n";
+    mr_snuggles@.@name @=@ "Evil Elvis"; @// error!@
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Dostęp - modyfikacja stałych składowych?!}
+    \framesubtitle{Pola stałe (stałe składowe)}
+
+    \begin{figure}[!htp]
+        \centering
+        \includegraphics[width=9cm]{hackerman}
+        \caption{Hackerman\footnote{Kung Fury (2015), \url{https://www.imdb.com/title/tt3472226/}}}
+    \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Dostęp - modyfikacja stałych składowych?!}
+    \framesubtitle{Pola stałe (stałe składowe)}
+    \label{hackerman_const_field_mutation}
+
+    Jeśli chce się zaimponować cioci w odwiedzinach, albo babci na święta to
+    można pokazać im jak \textsc{oszukać kompilator} i zmodyfikować
+    \textsc{stałe składowe}!
+
+    {\scriptsize
+    \begin{lstlisting}
+    `std::cout << mr_snuggles.name << "\n";`
+
+    auto wait_its_illegal = &mr_snuggles.name; $// pointer to member$
+    @*const_cast<std::string*>(wait_its_illegal)@ = "Evil Elvis";
+
+    `std::cout << mr_snuggles.name << "\n";`
+    \end{lstlisting}}
+
+    {\tiny Przy okazji widać też jak można pobrać \emph{wskaźnik do składowej}
+    (ang. \emph{pointer to member}). Nie jest to coś co często się przydaje, ale
+    na pewno częściej niż modyfikacja stałych składowych.}
+\end{frame}
+
+\section{Funkcje składowe}
+
+\begin{frame}[fragile]
+    \frametitle{Definiowanie funkcji składowych}
+    \framesubtitle{Funkcje składowe}
+
+    Funkcje składowe należy \emph{zadeklarować} wewnątrz struktury, do której mają
+    należeć.
+
+    {\small
+    \begin{lstlisting}
+    struct Cat {
+        $// declaration, usually in header file: Cat.h$
+        auto make_sound(bool const) const -> std::string;
+    };
+
+    $// definition, usually in implementation file: Cat.cpp$
+    auto Cat::make_sound(bool const loud) const -> std::string
+    {
+        $/* ... */$
+    }
+    \end{lstlisting}}
+
+    \emph{Definicje} funkcji składowych znajdują się (zazwyczaj) poza definicją
+    struktury.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Wywoływanie funkcji składowych}
+    \framesubtitle{Funkcje składowe}
+
+    Wywoływanie funkcji składowych odbywa się podobnie jak wywoływanie funkcji
+    wolnych (ang. \emph{free function}), z tym wyjątkiem, że ich pierwszym
+    parametrem jest obiekt, \emph{na którym} są wywoływane. Obiekt ten pojawia
+    się przed operatorem dostępu (tak jak w dostępie do pól).
+
+    {\small
+    \begin{lstlisting}
+    auto a_cat = Cat{};
+    `std::cout <<` a_cat@.@make_sound@(@false@)@ `<< "\n";`
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{``Ten'' obiekt}
+    \framesubtitle{Funkcje składowe}
+
+    Funkcja składowa jako ukryty argument otrzymuje informację o tym \emph{na
+    jakim obiekcie} została wywołana.
+
+    \vspace{1em}
+
+    Używając słowa kluczowego \texttt{this} można dostać się do wskaźnika do
+    ``tego'' obiektu i jawnie go używać:
+
+    {\small
+    \begin{lstlisting}
+    auto Cat::make_sound(bool const) const -> std::string
+    {
+        return ("I have " + std::to_string(@this@->lives_left)
+            + " lives left.");
     }
     \end{lstlisting}}
 \end{frame}
 
+\subsection{Przeładowywanie operatorów}
+
+\begin{frame}[fragile]
+    \frametitle{Przeładowanie operatorów}
+    \framesubtitle{Struktury}
+    \label{overloaded_operator_example}
+
+    W C++ możliwe jest ``przeładowanie operatorów'' (ang. \emph{operator
+    overloading}) czyli zdefiniowanie dla struktur danych funkcji składowych
+    wywoływanych np. przez operatory arytmetyczne \texttt{+} lub \texttt{-}.
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Modulo_arithmetic {
+        int const mod { std::numerical_limits<int>::max() };
+        int value { 0 };
+
+        Modulo_arithmetic(int v, int m): mod{m}, value{v} {}
+
+        auto @operator+@ (Modulo_arithmetic const) const -> Modulo_arithmetic;
+        auto @operator<@ (Modulo_arithmetic const) const -> bool;
+    };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Definiowanie przeładowanych operatorów}
+    \framesubtitle{Struktury}
+
+    Funkcja składowa implementująca operator poza tym, że ma ``śmieszną'' nazwę
+    niczym się nie różni od zwykłej funkcji składowej:
+
+    {\scriptsize
+    \begin{lstlisting}
+    auto Modulo_arithmetic::@operator+@ (Modulo_arithmetic const o) const
+        -> Modulo_arithmetic
+    {
+        $// FIXME what if the mods are different?$
+        return Modulo_arithmetic{(value + o.value) % mod, mod};
+    }
+
+    auto Modulo_arithmetic::@operator<@ (Modulo_arithmetic const o) const
+        -> bool
+    {
+        return (value < o.value);
+    }
+    \end{lstlisting}}
+\end{frame}
+
+\subsection{Specjalne funkcje składowe}
+
 % FIXME use this when talking about resources, I/O, and threads
-% \subsection{RAII}
-
-% \begin{frame}
-%     \frametitle{RAII - Resource Acquisition Is Initialisation}
-%     \framesubtitle{Struktury danych}
-
-%     (ang. \textit{destructor})
-% \end{frame}
-
 % \begin{frame}
 %     \frametitle{Destruktor}
 %     \framesubtitle{Struktury danych}
@@ -228,254 +700,136 @@ moredelim=**[is][\color{olive}]{$}{$}}
 %     (ang. \textit{destructor})
 % \end{frame}
 
-% \begin{frame}
-%     \frametitle{Rule of five}
-%     \framesubtitle{Struktury danych}
-
-%     (ang. \textit{destructor})
-% \end{frame}
-
-% \begin{frame}
-%     \frametitle{Rule of zero}
-%     \framesubtitle{Struktury danych}
-
-%     (ang. \textit{destructor})
-% \end{frame}
-
-\section{Pola}
-
 \begin{frame}[fragile]
-    \frametitle{Zmienne}
-    \framesubtitle{Pola}
+    \frametitle{Konstruktor}
+    \framesubtitle{Struktury}
+    \label{ctor_example}
 
-    Definicja zmiennego pola wygląda tak jak definicja każdej innej zmiennej.
-    Załóżmy, że chcemy stworzyć strukturę opisującą kota. Jak wiadomo, koty mają
-    9 żyć do wykorzystania:
+    Konstruktor (ang. \textit{constructor}) jest specjalną funkcją składową
+    odpowiedzialną za ``przygotowanie'' struktury danych do użycia.
 
-    {\small
+    {\scriptsize
     \begin{lstlisting}
-    struct Cat {
-        constexpr static unsigned MAX_LIVES = 9;
-        unsigned lives_left { MAX_LIVES };
+    struct Hour {
+        int value { 0 };
+
+        explicit Hour(unsigned): value{v}
+        {
+            @if@ (@v > 23@) { $// throw if they don't make sense$
+                @throw@ std::out_of_range{"hour value cannot exceed 23"};
+            }
+        }
     };
     \end{lstlisting}}
+
+    Konstruktor może zasygnalizować niemożność utworzenia instancji struktury
+    (np. z powodu niewłaściwych wartości argumentów) używając
+    wyjątków\footnote{ponieważ konstruktor jako takie nie zwraca wartości więc
+    nie ma jak inaczej zasygnalizować błędu}.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Destruktor}
+    \framesubtitle{Struktury}
+
+    Destruktor (ang. \textit{destructor}) jest specjalną funkcją składową
+    odpowiedzialną za ``zniszczenie'' struktury danych. Jest uruchamiany w
+    momencie tuż przed końcem czasu życia obiektu.
+
+    {\scriptsize
+    \begin{lstlisting}
+    struct Network_connection {
+        ~Network_connection()
+        {
+            shutdown(sock, SHUT_RDWR);
+            close(sock);
+        }
+    };
+    \end{lstlisting}}
+
+    Destruktory definiuje się zazwyczaj dla typów mających ``opakować'' jakiś
+    zasób, na przykład~pamięć, uchwyt do pliku, lub połączenie sieciowe.
 \end{frame}
 
 \begin{frame}
-    \frametitle{Inicjalizacja zmiennych składowych}
-    \framesubtitle{Pola}
+    \frametitle{RAII}
+    \framesubtitle{Struktury}
 
-    Zmienne składowe można zainicjalizować na kilka sposobów:
-    \begin{enumerate}
-        \item przypisując im wartość w liście inicjalizującej składowe (ang.
-            \emph{member initialiser list})
-        \item przypisując im wartość w ciele konstruktora
-        \item pozostawiając ich wartości domyślne zdefiniowane w ciele struktury
-    \end{enumerate}
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{Inicjalizacja zmiennych składowych (c.d.)}
-    \framesubtitle{Pola}
-
-    {\scriptsize
-    \begin{lstlisting}
-    struct Cat {
-        constexpr static unsigned MAX_LIVES = 9;
-        unsigned lives_left { MAX_LIVES }; $// default value provided$
-
-        Cat() = default; $// default ctor$
-        Cat(unsigned const);
-    };
-    Cat::Cat(unsigned const ll)
-        : lives_left{ll} $// use member initialiser list$
-    {}
-    \end{lstlisting}}
-
-    Jeśli definiujemy konstruktor to kompilator nie wygeneruje konstruktora
-    domyślnego (z pustą listą parametrów). Jeśli chcemy w takiej sytuacji
-    skorzystać z domyślnego konstruktora to możemy albo zdefiniować go
-    samodzielnie, albo użyć konstrukcji {\tt = default}.
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{Dostęp}
-    \framesubtitle{Pola}
-
-    Aby dostać się do pola struktury należy użyć operatora `{\tt .}' (kropki):
-
-    {\small
-    \begin{lstlisting}
-    auto a_cat = Cat{}; $// an ordinary cat$
-
-    std::cout << a_cat@.@lives_left << "\n";
-    \end{lstlisting}}
-
-    Jeśli pole jest zmienne, można je zmodyfikować:
-
-    {\small
-    \begin{lstlisting}
-    a_cat@.@lives_left @-=@ 1; $// the cat died$
-    \end{lstlisting}}
-
-    lub przypisać mu całkiem nową wartość:
-
-    {\small
-    \begin{lstlisting}
-    a_cat@.@lives_left @=@ 666; $// cat from hell$
-    \end{lstlisting}}
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{Stałe}
-    \framesubtitle{Pola stałe (stałe składowe)}
-
-    Definicja stałego pola wygląda tak jak definicja każdej innej stałej.
-    Kontynuując przykład z kotem:
-
-    {\scriptsize
-    \begin{lstlisting}
-    struct Cat {
-        constexpr static unsigned MAX_LIVES = 9;
-        unsigned lives_left { MAX_LIVES };
-
-        std::string @const@ name;
-
-        Cat() = default;
-        Cat(unsigned const);
-    };
-    \end{lstlisting}}
-
-    Wartości pół stałych nie można\footnote{Oh,
-    rly?\label{hackerman_const_field_mutation}} zmienić, nawet w ciele
-    konstruktora. Do ich inicjalizacji służy specjalna notacja.
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{Inicjalizacja stałych składowych}
-    \framesubtitle{Pola stałe (stałe składowe)}
-
-    Żeby mieć możliwość inicjalizacji stałego pola różnymi wartościami w różnych
-    instancjach struktury potrzebny jest konstruktor przyjmujący jako parametr
-    wartość, którą stałe powinno być zainicjalizowane:
-
-    {\scriptsize
-    \begin{lstlisting}
-    struct Cat {
-        constexpr static unsigned MAX_LIVES = 9;
-        unsigned lives_left { MAX_LIVES };
-
-        @std::string const name@;
-
-        Cat() = default;
-        Cat(unsigned const, @std::string@);
-    };
-    Cat::Cat(unsigned const ll, @std::string n@)
-        : lives_left{ll}
-        , @name{std::move(n)}@
-    {}
-    \end{lstlisting}}
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{Dostęp}
-    \framesubtitle{Pola stałe (stałe składowe)}
-
-    Do stałych pól struktury można się dostać za pomocą operatora `{\tt .}'
-    (kropki):
-
-    {\small
-    \begin{lstlisting}
-    auto mr_snuggles = Cat{ 9, "Mr. Snuggles" };
-
-    std::cout << mr_snuggles.name << "\n";
-    \end{lstlisting}}
-
-    Możliwy jest jednak dostęp wyłącznie do odczytu, a kompilator zapobiegnie
-    ich przypadkowej modyfikacji:
-
-    {\small
-    \begin{lstlisting}
-    mr_snuggles.name = "Evil Elvis"; @error!@
-    \end{lstlisting}}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Dostęp - modyfikacja stałych składowych?!}
-    \framesubtitle{Pola stałe (stałe składowe)}
-
-    \begin{figure}[!htp]
-        \centering
-        \includegraphics[width=9cm]{hackerman}
-        \caption{Hackerman\footnote{Kung Fury (2015), \url{https://www.imdb.com/title/tt3472226/}}}
-    \end{figure}
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{Dostęp - modyfikacja stałych składowych?!}
-    \framesubtitle{Pola stałe (stałe składowe)}
-
-    Jeśli chce się zaimponować cioci w odwiedzinach, albo babci na święta to
-    można pokazać im jak \textsc{oszukać kompilator} i zmodyfikować
-    \textsc{stałe składowe}!
-
-    {\scriptsize
-    \begin{lstlisting}
-    `std::cout << mr_snuggles.name << "\n";`
-
-    auto wait_its_illegal = &mr_snuggles.name; $// pointer to member$
-    @*const_cast<std::string*>(wait_its_illegal)@ = "Evil Elvis";
-
-    `std::cout << mr_snuggles.name << "\n";`
-    \end{lstlisting}}
-
-    {\tiny Przy okazji widać też jak można pobrać \emph{wskaźnik do składowej}
-    (ang. \emph{pointer to member}). Nie jest to coś co często się przydaje, ale
-    na pewno częściej niż modyfikacja stałych składowych.}
-\end{frame}
-
-\section{Funkcje}
-
-\begin{frame}
-    \frametitle{Definiowanie funkcji składowych}
-    \framesubtitle{Funkcje składowe}
-
-    Funkcję należy zadeklarować wewnątrz struktury, a następnie zdefiniować poza
-    strukturą.
+    RAII (ang. \emph{Resource Acquisition Is Initialisation}) jest metodą
+    zarządzania czasem życia obiektów\footnote{język Rust zawiera podobny
+    mechanizm przez swoje jawne śledzenia czasów życia -- czyli lifetimes} w
+    języku C++, definiującą kiedy obiekty są tworzone, kopiowane, przenoszone,
+    i niszczone. Gwarantuje ona automatyczne wywołanie konstruktora,
+    destruktora, oraz innych funkcji zarządzających obiektami w odpowiednich
+    momentach.
 
     \vspace{1em}
 
-    Definicje struktur (ich nazwy, pola, funkcje składowe) znajdują się
-    zazwyczaj w plikach nagłówkowych, np. {\tt Cat.h} (wyjątek to statyczne
-    zmienne składowe, które trzeba dodatkowo zadeklarować w pliku z
-    implementacją).\newline
-    Definicje funkcji składowych znajdują się zazwyczaj w plikach z ich
-    implementacją, np. {\tt Cat.cpp} (wyjątek to np. funkcje {\tt inline} albo
-    szablony).
+    Jest to kluczowa sprawa dla zapewnienia poprawnego zarządzania zasobami oraz
+    poprawności programu.
+\end{frame}
+
+\begin{frame}
+    \frametitle{``Rule of zero''}
+    \framesubtitle{RAII}
+
+    Zazwyczaj dla klasy definiuje się konstruktor, aby sterować tworzeniem jej
+    wartości. Dla klas, które nie zarządzają zasobami zdefiniowanie konstruktora
+    jest wystarczające i stosuje się ``Rule of zero'' czyli nie podawanie
+    definicji żadnej z funkcji biorących udział w zarządzaniu czasem życia
+    obiektów.
+\end{frame}
+
+\begin{frame}
+    \frametitle{``Rule of five''}
+    \framesubtitle{RAII}
+
+    ``Rule of
+    five''\footnote{\url{https://en.cppreference.com/w/cpp/language/rule_of_three}}
+    mówi natomiast, że jeśli zdefiniowana jest jedna z tych funkcji, to należy
+    najprawdopodobniej zdefiniować wszystkie pięć:
+
+    \vspace{1em}
+
+    \begin{labeling}{1. konstruktor przenoszący}
+        \item[1. konstruktor kopiujący] \texttt{T(T const\&)}
+        \item[2. konstruktor przenoszący] \texttt{T(T\&\&)}
+        \item[3. kopiujący \texttt{operator=}] \texttt{operator=(T const\&) -> T\&}
+        \item[4. przenoszący \texttt{operator=}] \texttt{operator=(T\&\&) -> T\&}
+        \item[5. destruktor] \texttt{~T()}
+    \end{labeling}
 \end{frame}
 
 \begin{frame}[fragile]
-    \frametitle{Definiowanie funkcji składowych (c.d.)}
-    \framesubtitle{Funkcje składowe}
+    \frametitle{``Rule of five'' (c.d.)}
+    \framesubtitle{RAII}
 
-    Deklaracja funkcji wewnątrz definicji struktury, definicja funkcji poza:
-
-    {\scriptsize
+    {\tiny
     \begin{lstlisting}
-    $// Cat.h$
-    struct Cat {
-        auto make_sound() const -> void;
+    class Network_connection {
+        int sock { -1 };
+
+        Network_connection(Network_connection const&) @= delete@;
+        Network_connection(Network_connection&& o)
+            : sock{std::move(o.sock)}
+        {
+            o.sock = -1;
+        }
+
+        auto operator=(Network_connection const&) @= delete@;
+        auto operator=(Network_connection&& o)
+        {
+            sock = std::move(o.sock);
+            o.sock = -1;
+        }
+
+        ~Network_connection()
+        {
+            shutdown(sock, SHUT_RDWR);
+            close(sock);
+        }
     };
-
-    $// Cat.cpp$
-    auto Cat::make_sound() const -> void
-    {
-        std::cout << ("Meow! (" + name + ")\n");
-    }
     \end{lstlisting}}
-
-    Wewnątrz definicji funkcji można używać jej pól (stała składowa {\tt name}
-    na przykładzie).
 \end{frame}
 
 \section{Zadania}
@@ -612,158 +966,33 @@ moredelim=**[is][\color{olive}]{$}{$}}
     {\tt src/s03-Time.cpp} (implementacja i funkcja {\tt main}).}
 \end{frame}
 
-%% zewnętrzne
-%% składowe
-
-\section{OOP}
-
 \begin{frame}
-    \frametitle{OOP}
-
-    OOP -- programowanie zorientowane obiektowo (ang. \emph{object-oriented
-    programming}).
-
-    \vspace{1em}
-
-    Na początku lat 70. XX wieku powstał język
-    Smalltalk\footnote{\url{https://en.wikipedia.org/wiki/Smalltalk}}. Jego
-    głównym zamysłem była swobodna \emph{wymiana wiadomości} między
-    \emph{obiektami} (dlatego ''zorientowane obiektowo'') współistniejącymi w
-    systemie.
-
-    W późnych latach 80. XX wieku powstał język
-    Erlang\footnote{\url{https://en.wikipedia.org/wiki/Erlang_(programming_language)}},
-    którego jednym z głównych mechanizmów była \emph{asynchroniczna} wymiana
-    wiadomości.
-\end{frame}
-
-\begin{frame}
-    \frametitle{OOP (c.d.)}
-
-    Na początku lat 60. XX wieku został opracowany język
-    Simula\footnote{\url{https://en.wikipedia.org/wiki/Simula}}, który z językiem
-    Smalltalk nie miał zbyt wiele wspólnego, ale za to posiadał klasy i
-    dziedziczenie.
-
-    \vspace{1em}
-
-    W 1985 powstał język C++\footnote{\url{https://en.wikipedia.org/wiki/C++}},
-    który zmiksował składnię i funkcjonalność języka C z mechanizmami języka
-    Simula (klasy i dziedziczenie).
-\end{frame}
-
-\begin{frame}
-    \frametitle{OOP (c.d.)}
-
-    W 1995 powstał język
-    Java\footnote{\url{https://en.wikipedia.org/wiki/Java_(programming_language)}},
-    który wzorował się na Simuli i C++ - też miał klasy i dziedziczenie.
-    W Java wszystkie klasy mają wspólną klasę bazową - nazwaną, pechowo, {\tt
-    Object}. Nie jest to jedyna pechowa decyzja w tym języku...
-
-    \vspace{1em}
-
-    Dział marketingu Oracle uznał, że to oznacza, że język jest zorientowany
-    obiektowo i od tamtego momentu OOP zmieniło się nie do poznania\footnote{na
-    zajęciach OOP będzie oznaczać tą drugą, zdegenerowaną formę, a nie
-    oryginalną ideę}.\\Zamiast oznaczać swobodną, asynchroniczną wymianę
-    wiadomości zaczęło oznaczać programowanie oparte na klasach i wzorce
-    projektowe usiłujące zamaskować biedę semantyczną języka Java.
-\end{frame}
-
-\subsection{...w C++}
-
-\begin{frame}
-    \frametitle{Dziedziczenie -- po co?}
-    \framesubtitle{OOP}
-
-    Dziedziczenie (ang. \emph{inheritance}) polega na zbudowaniu jednego typu
-    (\emph{pochodnego}; ang.  \emph{derived type}), w oparciu o drugi typ
-    (\emph{bazowy}; ang. \emph{base type}). Mówimy, że typ pochodny
-    \emph{dziedziczy po} typie bazowym.
-
-    \vspace{1em}
-
-    Typ pochodny posiada ''z automatu'' wszystkie pola i funkcje składowe typu
-    bazowego, ale dostęp ma tylko publicznych\footnote{Tak naprawdę ma jeszcze
-    dostęp do pól chronionych (słowo kluczowe {\tt protected}), ale pola
-    chronione to coś czego nie polecam używać. Dziedziczenie implementacji jest
-    brudnym mechanizmem nawet bez dodatkowych komplikacji.}, czyli typ pochodzny
-    \emph{dziedziczy implementację}\footnote{To czy odziedziczone pola są
-    widoczne ''na zewnątrz'' typu pochodnego zależy od tego czy dziedziczył
-    prywatnie (wtedy nie są) czy publicznie (wtedy są).} typu bazowego.
-\end{frame}
-
-\begin{frame}
-    \frametitle{Polimorfizm -- po co?}
-    \framesubtitle{OOP}
-
-    Polimorfizm (ang. \emph{polymorphism}) polega na wykorzystaniu wspólnego
-    interfejsu dla wielu typów. Typy prezentujące ten interfejs mogą być używane
-    zamiennie.
-
-    \vspace{1em}
-
-    Polimorfizm w odniesieniu do funkcji oznacza, że może ona działać na wielu
-    typach.\footnote{Jest to \emph{de facto} druga strona tego co powiedzieliśmy
-    o typach, bo można powiedzieć, że funkcja akceptuje typy spełniające pewien
-    interfejs i w ten sposób zatoczyć koło.}
-
-    \vspace{1em}
-
-    W C++ żeby móc wykorzystać polimorfizm potrzebe są wskaźniki lub referencje
-    (na etapie działania programu, ang. \emph{run time}), lub szablony (na
-    etapie kompilacji, ang. \emph{compile time}).
-\end{frame}
-
-\begin{frame}
-    \frametitle{Po co? (moim zdaniem)}
-    \framesubtitle{OOP}
-
-    Dziedziczenie w C++ jest sposobem na reprezentację relacji między typami
-    danych. Czyli jego \emph{pierwszorzędną} rolą jest zapewnienie hierarchii
-    typów, a dopiero \emph{drugorzędną} (niemal przy okazji) dziedziczenie
-    implementacji.
-
-    % \vspace{1em}
-
-    % Polimorfizm w C++ jest sposobem na podanie typu \emph{pochodnego} jako argumentu
-    % tam, gdzie parametr jest zadeklarowany jako typ \emph{bazowy}.
-
-    \vspace{1em}
-
-    Najprościej jak się da, nie ma co sobie komplikować życia. Jeśli chcemy
-    współdzielić implementację mamy do tego dedykowany mechanizm -
-    \emph{procedural abstraction}\footnote{patrz pierwszy wykład} czyli funkcje.
-\end{frame}
-
-%% po co dziedziczenie?
-%%      - ontological inheritance, specialisation: T is a specific kind of B
-%%      - abstract data type inheritance, substitution: T behaves as if it was B
-%%      - implementation inheritance, code sharing: T has all properties of B,
-%%        but augments them in certain ways
-
-\section{Zadania (OOP)}
-
-\begin{frame}
-    \frametitle{Zadanie: kalkulator}
+    \frametitle{Zadanie: ctor i dtor}
     \label{lecture_exercise_5}
 
-    Rozwinąć kalkulator napisany w stylu obiektowym tak, żeby nie odbiegał
-    funkcjonalnością od kalkulatora napisanego w stylu proceduralnym
-    zaimplementowanego w ramach poprzednich zajęć.
-
-    Kod do wystartowania znajduje się w repozytorium z
-    materiałami\footnote{\url{https://git.sr.ht/~maelkum/education-introduction-to-programming-cxx}}
-    w plikach \texttt{src/04-rpn-calculator-oo.cpp} (implementacja) i
-    \texttt{include/RPN\_calculator.h} (plik nagłówkowy).
+    Zaimplementować strukturę, która w konstruktorze przyjmie wartość typu
+    \texttt{std::string}, a w destruktorze wydrukuje ją na ekran poprzedzoną
+    napisem \texttt{"DESTRUCTION!"}.
 
     \vspace{1em}
 
     {\footnotesize
-    Wasz kod powinien znaleźć się w plikach
-    \texttt{src/s04-rpn-calculator-oo.cpp} (implementacja) i
-    \texttt{include/RPN\_calculator.h} (plik nagłówkowy).}
+    Kod źródłowy w pliku{\tt src/s04-ctor-dtor.cpp}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Zadanie: this}
+    \label{lecture_exercise_6}
+
+    Zaimplementować strukturę, która będzie miała funkcję składową drukującą na
+    ekran wartość wskaźnika \texttt{this}. W funkcji \texttt{main()} wywołać tą
+    funkcję na stworzonym obiekcie, oraz pobrać jego adres ``ręcznie''
+    operatorem \texttt{\&} i porównać wyniki.
+
+    \vspace{1em}
+
+    {\footnotesize
+    Kod źródłowy w pliku{\tt src/s04-this.cpp}}
 \end{frame}
 
 \section{Podsumowanie}
@@ -779,7 +1008,8 @@ moredelim=**[is][\color{olive}]{$}{$}}
             składowe
         \item wytłumaczyć czym jest i jak działa funkcja składowa, oraz czym
             jest {\tt this}
-        \item powiedzieć jaka jest rola konstruktora
+        \item powiedzieć jaka jest rola konstruktora, destruktora
+        \item znać pojęcia takie jak RAII, Rule of zero, Rule of five
     \end{enumerate}
 \end{frame}
 
@@ -793,7 +1023,8 @@ moredelim=**[is][\color{olive}]{$}{$}}
     \ref{lecture_exercise_2},
     \ref{lecture_exercise_3},
     \ref{lecture_exercise_4},
-    \ref{lecture_exercise_5}.
+    \ref{lecture_exercise_5}, i
+    \ref{lecture_exercise_6}.
 \end{frame}
 
 \end{document}

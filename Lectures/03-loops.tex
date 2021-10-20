@@ -42,7 +42,257 @@ moredelim=**[is][\color{olive}]{$}{$}}
     \frame{\titlepage}
 }
 
-\section{{\tt while} i {\tt do-while}}
+\section{Tablica: C-style vs C++}
+
+\begin{frame}
+    \frametitle{Po co?}
+
+    Tablica oraz jej pochodne takie jak {\tt std::array} czy {\tt std::vector}
+    są sposobem na przechowywanie więcej niż 1 wartości (tego samego typu) w
+    jednej zmiennej.
+
+    \vspace{1em}
+
+    Upraszcza to programowanie pozwalając na wygodną iterację po elementach
+    takich \emph{sekwencji} zamiast np. analizowaniu 100 zmiennych z osobna, czy
+    umożliwiając przechowywanie zmiennych ilości elementów -- niekoniecznie
+    znanych na etapie pisania programu.
+\end{frame}
+
+\begin{frame}
+    \frametitle{tablica (C-style array)}
+
+    Tablica w stylu C jest obszarem pamięci o stałym rozmiarze pozwalającym na
+    przechowanie \emph{n} elementów, gdzie \emph{n} musi być znane na etapie
+    kompilacji\footnote{{\tt constexpr} w nomenklaturze C++}.
+\end{frame}
+
+\begin{frame}
+    \frametitle{wady}
+    \framesubtitle{tablica (C-style array)}
+
+    Wadą tablicy w stylu C jest to, że bardzo łatwo jest utracić informację o
+    jej rozmiarze ponieważ ona sama ma do niego bardzo ``luźne'' podejście i de
+    facto nie zawiera takiej informacji.
+    Tablica może być \emph{automatycznie rzutowana} na wskaźnik, a po takiej
+    operacji niemal niemożliwe jest odzyskanie informacji o tym ile elementów
+    zawiera.
+
+    \vspace{1em}
+
+    Brak informacji (lub niepoprawna informacja) o rozmiarze tablicy może
+    prowadzić do tzw. \emph{buffer overflow} i, pozwalając na nadpisanie
+    niepowiązanych z tablicą obszarów pamięci, prowadzić do usterek w
+    programie.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{inicjalizacja tablic w stylu C}
+    \framesubtitle{tablica (C-style array)}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <algorithm>`
+
+    int numbers[100];  $// uninitialised array of 100 integers$
+                       $// its elements contain "random garbage"$
+
+    $// each element holds a zero$
+    std::fill_n(numbers, 100, 0);
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{inicjalizacja tablic w stylu C (2)}
+    \framesubtitle{tablica (C-style array)}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <algorithm>`
+
+    constexpr auto NUMBERS_SIZE = 100;
+    int numbers[NUMBERS_SIZE];
+    std::fill_n(numbers, NUMBERS_SIZE, 0);
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{inicjalizacja tablic w stylu C (3)}
+    \framesubtitle{tablica (C-style array)}
+
+    Tablicę można również zainicjalizować podając jej elementy w nawiasach
+    klamrowych. Rozmiar tablicy jest w takim przypadku określany automatycznie.
+
+    {\footnotesize
+    \begin{lstlisting}
+    int numbers[] = { 1, 2, 4, 8, 16, 32, 64, 128 };
+
+    constexpr auto NUMBERS_SIZE
+        = (sizeof(numbers) / sizeof(numbers[0]));
+    \end{lstlisting}}
+
+    Używając operatora {\tt sizeof} można ``odzyskać'' rozmiar tablicy
+    obliczając go.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{dostęp do wartości}
+
+    Tablice są \emph{indeksowane} liczbami całkowitymi.\\
+    Indeksem pierwszego elementu jest 0.
+
+    {\footnotesize
+    \begin{lstlisting}
+    `int numbers[100];`
+
+    numbers[0] = 42;  $// write an element$
+
+    auto x = numbers[0];  $// read an element$
+    \end{lstlisting}}
+
+    W ten sam sposób można dostać się do elementów {\tt std::array} i {\tt
+    std::vector}.
+\end{frame}
+
+\begin{frame}
+    \frametitle{{\tt std::array}}
+
+    {\tt std::array} jest strukturą danych pozwalającą na przechowanie \emph{n}
+    elementów, gdzie \emph{n} musi być znane na etapie kompilacji i jest
+    niezmienne w trakcie działania programu.
+\end{frame}
+
+\begin{frame}
+    \frametitle{wady i zalety}
+    \framesubtitle{{\tt std::array}}
+
+    Zaletą {\tt std::array} względem tablicy w stylu C jest to, że jest ona
+    osobnym typem danych, a nie prostym wskaźnikiem na obszar pamięci. Pozwala
+    jej to m.in. na śledzenie swojego rozmiaru, oraz zapobiega przypadkowym
+    automatycznym konwersjom.
+
+    \vspace{1em}
+
+    Zarówno wadą jak i zaletą jest jednak fakt, że typ tablicy zawiera liczbę
+    jej elementów. Powoduje to, że C++ nie pozwoli przekazać do tego samego
+    parametru zarówno {\tt std::array<int, 10>} oraz {\tt std::array<int, 100>}.
+    Jeśli jedna funkcja ma obsługiwać tablice różnych rozmiarów to trzeba uciec
+    się do szablonów, wskaźników, lub iteratorów.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{inicjalizacja}
+    \framesubtitle{{\tt std::array}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <algorithm>`
+    `#include <array>`
+
+    $// uninitialised array of 100 integers$
+    $// its elements contain "random garbage"$
+    std::array<int, 100> numbers;
+
+    $// initialise all elements to 0$
+    std::fill(numbers.begin(), numbers.end(), 0);
+
+    $// initialise all elements to 0$
+    std::fill_n(numbers.begin(), numbers.size(), 0);
+                                   
+    \end{lstlisting}}
+\end{frame}
+
+\subsection{Wektor}
+
+\begin{frame}
+    \frametitle{{\tt std::vector}}
+
+    {\tt std::vector} jest strukturą danych reprezentującą tablicę zmiennego
+    rozmiaru.
+
+    Podczas działania programu można do wartości typu {\tt std::vector} dodawać
+    i usuwać elementy, a rozmiar wektora dostosuje się do aktualnej ich liczby.
+\end{frame}
+
+\begin{frame}
+    \frametitle{wady i zalety}
+    \framesubtitle{{\tt std::array}}
+
+    Zaletą {\tt std::vector} względem tablic jest automatyczne dostosowywanie
+    rozmiaru. Jeśli ilość elementów jaka może być wymagana nie jest znana na
+    etapie kompilacji to {\tt std::vector} z łatwością taką sytuację obsłuży.
+
+    \vspace{1em}
+
+    Pewną wadą {\tt std::vector} jest nadmierne zużycie pamięci w niektórych
+    przypadkach. Wektor podczas powiększania rozmiaru alokuje pamięć z
+    naddatkiem, który nie musi być przez program użyty. W takiej sytuacji
+    rozmiar wektora można ręcznie pomniejszyć do aktualnie wymaganego.
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{inicjalizacja}
+    \framesubtitle{{\tt std::array}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <vector>`
+
+    $// empty vector of integers$
+    auto ve = std::vector<int>{};
+
+    $// vector of 100 zero-initialised integers$
+    auto vd = std::vector<int>(100);
+
+    $// vector of 4 integers$
+    auto vd = std::vector<int>{ 2, 4, 8, 16 };
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{dodawanie i usuwanie wartości}
+    \framesubtitle{{\tt std::array}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <algorithm>`
+    `#include <vector>`
+
+    auto v = std::vector<int>{ -1, 0, 1 };
+
+    $// push 42 to the vector as the last element$
+    v.push_back(42);
+
+    $// pop (remove) last element from the vector$
+    v.pop_back();
+
+    $// remove element with a specific value from the vector$
+    v.erase(std::find(v.begin(), v.end(), -1));
+    \end{lstlisting}}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{zmiana rozmiaru}
+    \framesubtitle{{\tt std::array}}
+
+    {\footnotesize
+    \begin{lstlisting}
+    `#include <vector>`
+
+    auto v = std::vector<int>{};
+
+    $// resize the vector to hold 42 elements$
+    v.resize(42);
+
+    $// remove all elements to the vector$
+    v.clear();
+
+    $// reduce capacity of the vector to match its size$
+    v.shrink_to_fir();
+    \end{lstlisting}}
+\end{frame}
+
+\section{{\tt while}, {\tt do-while}, {\tt for}}
 
 \begin{frame}[fragile]
     \frametitle{Po co?}
@@ -194,7 +444,7 @@ moredelim=**[is][\color{olive}]{$}{$}}
     \end{lstlisting}
 \end{frame}
 
-\section{{\tt for}}
+\subsection{{\tt for}}
 
 \begin{frame}[fragile]
     \frametitle{Po co?}
@@ -331,7 +581,7 @@ moredelim=**[is][\color{olive}]{$}{$}}
     \end{lstlisting}
 \end{frame}
 
-\section{Zadania (pętle)}
+\subsection{zadania}
 
 \begin{frame}[fragile]
     \frametitle{Zadanie: hasło}
@@ -647,6 +897,8 @@ moredelim=**[is][\color{olive}]{$}{$}}
     }
     \end{lstlisting}}
 \end{frame}
+
+\subsection{zadania}
 
 \begin{frame}[fragile]
     \frametitle{Kalkulator}

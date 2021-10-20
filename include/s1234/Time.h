@@ -29,6 +29,13 @@ struct Time {
     auto count_seconds() const -> std::uint64_t;
     auto count_minutes() const -> std::uint64_t;
     auto time_to_midnight() const -> Time;
+
+    auto operator+  (Time const&) const -> Time;
+    auto operator-  (Time const&) const -> Time;
+    auto operator<  (Time const&) const -> bool;
+    auto operator>  (Time const&) const -> bool;
+    auto operator== (Time const&) const -> bool;
+    auto operator!= (Time const&) const -> bool;
 };
 
 }

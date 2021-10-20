@@ -110,6 +110,88 @@ namespace s1234 {
 
         return time;
     }
+
+    auto Time::operator+ (Time const& o) const -> Time {
+        unsigned short h = hour;
+        unsigned short m = minute;
+        unsigned short s = second;
+        s += o.second;
+        if(s > 59) {
+            s -= 60;
+            m++;
+        }
+        m += o.minute;
+        if(m > 59) {
+            m -= 60;
+            h++;
+        }
+        h += o.hour;
+        if(h > 23)
+            h -= 24;
+
+        return Time(h, m, s);
+    }
+
+    auto Time::operator- (Time const& o) const -> Time {
+        short h = hour;
+        short m = minute;
+        short s = second;
+        s -= o.second;
+        if(s < 0) {
+            s += 60;
+            m--;
+        }
+        m -= o.minute;
+        if(m < 0) {
+            m += 60;
+            h--;
+        }
+        h -= o.hour;
+        if(h < 0)
+            h += 24;
+
+        return Time(h, m, s);
+    }
+
+    auto Time::operator< (Time const& o) const -> bool {
+        if(hour < o.hour)
+            return true;
+        if(hour != o.hour)
+            return false;
+        if(minute < o.minute)
+            return true;
+        if(minute != o.minute)
+            return false;
+        if(second < o.second)
+            return true;
+        if(second != o.minute)
+            return false;
+        return false;
+    }
+
+    auto Time::operator> (Time const& o) const -> bool {
+        if(hour > o.hour)
+            return true;
+        if(hour != o.hour)
+            return false;
+        if(minute > o.minute)
+            return true;
+        if(minute != o.minute)
+            return false;
+        if(second > o.second)
+            return true;
+        if(second != o.minute)
+            return false;
+        return false;
+    }
+
+    auto Time::operator== (Time const& o) const -> bool {
+        return (hour==o.hour && minute==o.minute&&second==o.second);
+    }
+
+    auto Time::operator!= (Time const& o) const -> bool {
+        return !(hour==o.hour && minute==o.minute&&second==o.second);
+    }
 }
 
 auto main() -> int {
@@ -126,6 +208,12 @@ auto main() -> int {
     std::cout << "seconds: " << time.count_seconds() << "\n";
     std::cout << "minutes: " << time.count_minutes() << "\n";
     std::cout << "time to midnight: " << time.time_to_midnight().to_string() << "\n";
+
+    auto x = time + s1234::Time(10, 50, 30);
+    auto y = x - s1234::Time(0, 0, 31);
+
+    std::cout << x.to_string() << "\n";
+    std::cout << y.to_string() << "\n";
 
     return 0;
 }
