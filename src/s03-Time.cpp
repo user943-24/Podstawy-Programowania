@@ -55,13 +55,13 @@ namespace s1234 {
 
     auto Time::to_string(Time::Time_of_day tod) const -> std::string {
         switch(tod) {
-            case morning:
+            case Time_of_day::morning:
                 return "morning";
-            case afternoon:
+            case Time_of_day::afternoon:
                 return "afternoon";
-            case  evening:
+            case  Time_of_day::evening:
                 return "evening";
-            case night:
+            case Time_of_day::night:
                 return "night";
             default:
                 throw "Something's wrong!";
@@ -70,13 +70,13 @@ namespace s1234 {
 
     auto Time::time_of_day() const -> Time_of_day {
         if(hour >= 6 && hour <= 11)
-            return Time::morning;
+            return Time::Time_of_day::morning;
         else if(hour >= 12 && hour <= 16)
-            return Time::afternoon;
+            return Time::Time_of_day::afternoon;
         else if(hour >= 17 && hour <= 20)
-            return Time::evening;
+            return Time::Time_of_day::evening;
         else
-            return Time::night;
+            return Time::Time_of_day::night;
     }
 
     auto Time::count_seconds() const -> std::uint64_t {

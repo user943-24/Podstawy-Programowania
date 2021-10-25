@@ -10,7 +10,7 @@ struct Time {
     unsigned short hour = 0;
     unsigned short minute = 0;
     unsigned short second = 0;
-    enum Time_of_day {
+    enum class Time_of_day {
         morning,
         afternoon,
         evening,
